@@ -99,20 +99,18 @@
                             <div class="checkout__order__total">Total <span>{{cartService.total | currency }}</span></div>
                             <p>Lorem ipsum dolor sit amet, consectetur adip elit, sed do eiusmod tempor incididunt
                                 ut labore et dolore magna aliqua.</p>
-                            <div class="checkout__input__checkbox">
-                                <label for="payment">
-                                    Check Payment
-                                    <input type="checkbox" id="payment">
-                                    <span class="checkmark"></span>
-                                </label>
-                            </div>
-                            <div class="checkout__input__checkbox">
-                                <label for="paypal">
-                                    Paypal
-                                    <input type="checkbox" id="paypal">
-                                    <span class="checkmark"></span>
-                                </label>
-                            </div>
+                                <div class="checkout__input__radio">
+                                    <label>
+                                        <input type="radio" name="paymentMethod" [(ngModel)]="orderForm.paymentMethod" value="check">
+                                        Check Payment
+                                    </label>
+                                </div>
+                                <div class="checkout__input__radio">
+                                    <label>
+                                        <input type="radio" name="paymentMethod" [(ngModel)]="orderForm.paymentMethod" value="paypal">
+                                        PayPal
+                                    </label>
+                                </div>
                             <button type="submit" class="site-btn" (click)="placeOrder()">PLACE ORDER</button>
                         </div>
                     </div>

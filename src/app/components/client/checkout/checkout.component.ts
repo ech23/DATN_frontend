@@ -38,7 +38,7 @@ export class CheckoutComponent implements OnInit {
     note: null
   }
 
-  constructor(public cartService: CartService,private orderService:OrderService,private storageService: StorageService){
+  constructor(public cartService: CartService, private orderService: OrderService, private storageService: StorageService, private messageService: MessageService){
     
   }
   ngOnInit(): void {
@@ -59,6 +59,7 @@ export class CheckoutComponent implements OnInit {
       orderDetail.quantity = res.quantity;
       orderDetail.subTotal = res.subTotal;
       this.listOrderDetail.push(orderDetail);
+      this.showSuccess("Check out Successfully!")
     })
 
     const {firstname,lastname,country,address,town,state,postCcode,phone,email,note} = this.orderForm;
@@ -72,5 +73,7 @@ export class CheckoutComponent implements OnInit {
 
   }
 
-
+  showSuccess(text: string) {
+    this.messageService.add({severity:'success', summary: 'Success', detail: text});
+  }
 }
