@@ -8,6 +8,7 @@ import { CartService } from 'src/app/_service/cart.service';
 import { OrderService } from 'src/app/_service/order.service';
 import { StorageService } from 'src/app/_service/storage.service';
 
+
 @Component({
   selector: 'app-checkout',
   templateUrl: './checkout.component.html',
