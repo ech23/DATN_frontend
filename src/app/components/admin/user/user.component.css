@@ -1,0 +1,123 @@
+.card {
+    margin: 1rem;
+    box-shadow: 0 2px 1px -1px rgba(0,0,0,.2), 0 1px 1px 0 rgba(0,0,0,.14), 0 1px 3px 0 rgba(0,0,0,.12);
+    border-radius: 4px;
+}
+
+.card-header {
+    padding: 1rem;
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.card-body {
+    padding: 1rem;
+}
+
+.confirmation-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.p-datatable .p-datatable-header {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    padding: 1rem;
+}
+
+.p-datatable .p-datatable-thead > tr > th {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    padding: 0.75rem;
+    font-weight: 600;
+}
+
+.p-datatable .p-datatable-tbody > tr > td {
+    border: 1px solid #dee2e6;
+    padding: 0.75rem;
+}
+
+.p-datatable .p-datatable-tbody > tr:nth-child(even) {
+    background: #f8f9fa;
+}
+
+.p-datatable .p-datatable-tbody > tr:hover {
+    background: #e9ecef;
+}
+
+.p-chip {
+    margin-right: 0.5rem;
+}
+
+.p-button.p-button-sm {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+}
+
+.p-dialog .p-dialog-header {
+    background: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+    padding: 1rem;
+}
+
+.p-dialog .p-dialog-content {
+    padding: 1rem;
+}
+
+.p-dialog .p-dialog-footer {
+    background: #f8f9fa;
+    border-top: 1px solid #dee2e6;
+    padding: 1rem;
+}
+
+.field {
+    margin-bottom: 1rem;
+}
+
+.field label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+}
+
+.field input, .field p-multiSelect {
+    width: 100%;
+}
+
+.field-checkbox {
+    display: flex;
+    align-items: center;
+}
+
+.field-checkbox label {
+    margin-bottom: 0;
+    margin-left: 0.5rem;
+}
+
+.p-error {
+    color: #dc3545;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+.ng-invalid.ng-dirty {
+    border-color: #dc3545;
+}
+
+/* Responsive adjustments */
+@media screen and (max-width: 768px) {
+    .card {
+        margin: 0.5rem;
+    }
+    
+    .p-datatable .p-datatable-thead > tr > th,
+    .p-datatable .p-datatable-tbody > tr > td {
+        padding: 0.5rem;
+    }
+    
+    .p-dialog {
+        width: 90% !important;
+        max-width: 450px;
+    }
+} 

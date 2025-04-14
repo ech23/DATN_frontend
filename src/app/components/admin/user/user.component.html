@@ -1,0 +1,135 @@
+<p-toast></p-toast>
+
+<div class="card">
+    <div class="card-header">
+        <h5 class="m-0">User Management</h5>
+    </div>
+    <div class="card-body">
+        <div class="d-flex justify-content-between mb-3">
+            <h5 class="card-title">Users</h5>
+            <button pButton icon="pi pi-plus" class="p-button-success" (click)="openNew()" label="Add User"></button>
+        </div>
+
+        <p-table [value]="users" [loading]="loading" [paginator]="true" [rows]="10" 
+                [rowsPerPageOptions]="[5, 10, 25]" [showCurrentPageReport]="true" 
+                currentPageReportTemplate="Showing {first} to {last} of {totalRecords} users" 
+                responsiveLayout="scroll" styleClass="p-datatable-gridlines">
+            <ng-template pTemplate="header">
+                <tr>
+                    <th pSortableColumn="id">ID <p-sortIcon field="id"></p-sortIcon></th>
+                    <th pSortableColumn="username">Username <p-sortIcon field="username"></p-sortIcon></th>
+                    <th pSortableColumn="email">Email <p-sortIcon field="email"></p-sortIcon></th>
+                    <th pSortableColumn="firstname">First Name <p-sortIcon field="firstname"></p-sortIcon></th>
+                    <th pSortableColumn="lastname">Last Name <p-sortIcon field="lastname"></p-sortIcon></th>
+                    <th pSortableColumn="roles">Roles <p-sortIcon field="roles"></p-sortIcon></th>
+                    <th pSortableColumn="enabled">Status <p-sortIcon field="enabled"></p-sortIcon></th>
+                    <th>Actions</th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-user>
+                <tr>
+                    <td>{{user.id}}</td>
+                    <td>{{user.username}}</td>
+                    <td>{{user.email}}</td>
+                    <td>{{user.firstname}}</td>
+                    <td>{{user.lastname}}</td>
+                    <td>
+                        <p-chip *ngFor="let role of user.roles" [label]="role" [removable]="false"></p-chip>
+                    </td>
+                    <td>
+                        <p-button *ngIf="user.enabled" icon="pi pi-check" class="p-button-success p-button-sm" 
+                                (click)="toggleUserStatus(user)" pTooltip="Disable User"></p-button>
+                        <p-button *ngIf="!user.enabled" icon="pi pi-times" class="p-button-danger p-button-sm" 
+                                (click)="toggleUserStatus(user)" pTooltip="Enable User"></p-button>
+                    </td>
+                    <td>
+                        <button pButton icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2" 
+                                (click)="editUser(user)" pTooltip="Edit User"></button>
+                        <button pButton icon="pi pi-trash" class="p-button-rounded p-button-danger" 
+                                (click)="deleteUser(user)" pTooltip="Delete User"></button>
+                    </td>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+                <tr>
+                    <td colspan="8" class="text-center">No users found.</td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+</div>
+
+<!-- User Dialog -->
+<p-dialog [(visible)]="userDialog" [style]="{width: '450px'}" [modal]="true" 
+        [draggable]="false" [resizable]="false" 
+        [header]="user.id ? 'Edit User' : 'Create User'">
+    <ng-template pTemplate="content">
+        <div class="p-fluid">
+            <div class="field mb-3">
+                <label for="username" class="font-bold">Username*</label>
+                <input id="username" type="text" pInputText [(ngModel)]="user.username" 
+                        [ngClass]="{'ng-invalid ng-dirty': submitted && !user.username}" required autofocus>
+                <small class="p-error" *ngIf="submitted && !user.username">Username is required.</small>
+            </div>
+            <div class="field mb-3">
+                <label for="email" class="font-bold">Email*</label>
+                <input id="email" type="email" pInputText [(ngModel)]="user.email" 
+                        [ngClass]="{'ng-invalid ng-dirty': submitted && !user.email}" required>
+                <small class="p-error" *ngIf="submitted && !user.email">Email is required.</small>
+            </div>
+            <div class="field mb-3">
+                <label for="firstname" class="font-bold">First Name</label>
+                <input id="firstname" type="text" pInputText [(ngModel)]="user.firstname">
+            </div>
+            <div class="field mb-3">
+                <label for="lastname" class="font-bold">Last Name</label>
+                <input id="lastname" type="text" pInputText [(ngModel)]="user.lastname">
+            </div>
+            <div class="field mb-3">
+                <label for="country" class="font-bold">Country</label>
+                <input id="country" type="text" pInputText [(ngModel)]="user.country">
+            </div>
+            <div class="field mb-3">
+                <label for="state" class="font-bold">State</label>
+                <input id="state" type="text" pInputText [(ngModel)]="user.state">
+            </div>
+            <div class="field mb-3">
+                <label for="address" class="font-bold">Address</label>
+                <input id="address" type="text" pInputText [(ngModel)]="user.address">
+            </div>
+            <div class="field mb-3">
+                <label for="phone" class="font-bold">Phone</label>
+                <input id="phone" type="text" pInputText [(ngModel)]="user.phone">
+            </div>
+            <div class="field mb-3">
+                <label for="roles" class="font-bold">Roles</label>
+                <p-multiSelect id="roles" [options]="availableRoles" [(ngModel)]="user.roles" 
+                            [defaultLabel]="'Select Roles'" [selectedItemsLabel]="'{0} roles selected'">
+                </p-multiSelect>
+            </div>
+            <div class="field-checkbox mb-3">
+                <p-checkbox [(ngModel)]="user.enabled" [binary]="true" inputId="enabled"></p-checkbox>
+                <label for="enabled" class="ml-2">Enabled</label>
+            </div>
+        </div>
+    </ng-template>
+    <ng-template pTemplate="footer">
+        <button pButton icon="pi pi-times" class="p-button-text" (click)="hideDialog()" label="Cancel"></button>
+        <button pButton icon="pi pi-check" class="p-button-text" (click)="saveUser()" label="Save"></button>
+    </ng-template>
+</p-dialog>
+
+<!-- Delete Confirmation Dialog -->
+<p-dialog [(visible)]="deleteUserDialog" [style]="{width: '450px'}" [modal]="true" 
+        [draggable]="false" [resizable]="false" header="Confirm" [style]="{width: '450px'}">
+    <ng-template pTemplate="content">
+        <div class="confirmation-content">
+            <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem"></i>
+            <span *ngIf="selectedUser">Are you sure you want to delete <b>{{selectedUser.username}}</b>?</span>
+        </div>
+    </ng-template>
+    <ng-template pTemplate="footer">
+        <button pButton icon="pi pi-times" class="p-button-text" (click)="deleteUserDialog = false" label="No"></button>
+        <button pButton icon="pi pi-check" class="p-button-text p-button-danger" (click)="confirmDelete()" label="Yes"></button>
+    </ng-template>
+</p-dialog> 

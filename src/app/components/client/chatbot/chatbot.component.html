@@ -1,0 +1,44 @@
+<div class="chatbot-container" [class.open]="isOpen">
+    <!-- Chat Button -->
+    <div class="chat-button" (click)="toggleChat()">
+        <i class="fas fa-comments"></i>
+        <span class="notification-badge" *ngIf="unreadCount > 0">{{unreadCount}}</span>
+    </div>
+
+    <!-- Chat Window -->
+    <div class="chat-window" *ngIf="isOpen">
+        <!-- Chat Header -->
+        <div class="chat-header">
+            <div class="chat-header-info">
+                <h3>Customer Support</h3>
+                <p>We typically reply within 5 minutes</p>
+            </div>
+            <button class="close-button" (click)="toggleChat()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <!-- Chat Messages -->
+        <div class="chat-messages" #scrollMe>
+            <div class="message bot" *ngFor="let message of messages">
+                <div class="message-content">
+                    <div class="message-text">{{message.text}}</div>
+                    <div class="message-time">{{message.time | date:'shortTime'}}</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chat Input -->
+        <div class="chat-input">
+            <input 
+                type="text" 
+                [(ngModel)]="userInput" 
+                (keyup.enter)="sendMessage()"
+                placeholder="Type your message..."
+                [disabled]="isTyping">
+            <button (click)="sendMessage()" [disabled]="!userInput.trim() || isTyping">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+</div> 

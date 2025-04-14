@@ -14,6 +14,7 @@ import { HomeComponent } from './components/client/home/home.component';
 import { IndexComponent } from './components/client/index/index.component';
 import { LoginPageComponent } from './components/client/login-page/login-page.component';
 import { MyOrderComponent } from './components/client/my-order/my-order.component';
+import { PaymentResultComponent } from './components/client/payment-result/payment-result.component';
 import { ProductDetailComponent } from './components/client/product-detail/product-detail.component';
 import { SearchComponent } from './components/client/search/search.component';
 import { ShopComponent } from './components/client/shop/shop.component';
@@ -39,6 +40,7 @@ const routes: Routes = [
       {path:'',component:HomeComponent},
       {path:'cart',component: CartComponent},
       {path:'checkout',component: CheckoutComponent,canActivate: [AuthGuardService]},
+      {path:'payment-result',component: PaymentResultComponent,canActivate: [AuthGuardService]},
       {path:'category/:id',component: ShopComponent},
       {path:'product/:id',component:ProductDetailComponent},
       {path:'blog',component: BlogClientComponent},

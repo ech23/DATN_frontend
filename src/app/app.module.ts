@@ -47,7 +47,9 @@ import { UserDetailComponent } from './components/client/user-detail/user-detail
 import { MyOrderComponent } from './components/client/my-order/my-order.component';
 import { SearchComponent } from './components/client/search/search.component';
 import { LoginPageComponent } from './components/client/login-page/login-page.component';
-
+import { ChatbotComponent } from './components/client/chatbot/chatbot.component';
+import { VNPayService } from './_service/vnpay.service';
+import { PaymentResultComponent } from './components/client/payment-result/payment-result.component';
 
 @NgModule({
   declarations: [
@@ -71,7 +73,8 @@ import { LoginPageComponent } from './components/client/login-page/login-page.co
     MyOrderComponent,
     SearchComponent,
     LoginPageComponent,
-
+    ChatbotComponent,
+    PaymentResultComponent
   ],
   imports: [
     BrowserModule,
@@ -102,7 +105,7 @@ import { LoginPageComponent } from './components/client/login-page/login-page.co
     DataViewModule,
     MultiSelectModule
   ],
-  providers: [],
+  providers: [VNPayService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

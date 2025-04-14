@@ -97,22 +97,35 @@
                             <div class="checkout__order__subtotal">Subtotal <span>{{cartService.totalPrice | currency}}</span></div>
                             <div class="checkout__order__sale">Sale <span>0%</span></div>
                             <div class="checkout__order__total">Total <span>{{cartService.total | currency }}</span></div>
-                            <p>Lorem ipsum dolor sit amet, consectetur adip elit, sed do eiusmod tempor incididunt
-                                ut labore et dolore magna aliqua.</p>
+                            <p>Please select your payment method below:</p>
+                            <div class="payment-methods">
                                 <div class="checkout__input__radio">
                                     <label>
                                         <input type="radio" name="paymentMethod" [(ngModel)]="orderForm.paymentMethod" value="check">
-                                        Check Payment
+                                        Thanh toán tiền mặt
                                     </label>
                                 </div>
                                 <div class="checkout__input__radio">
                                     <label>
-                                        <input type="radio" name="paymentMethod" [(ngModel)]="orderForm.paymentMethod" value="paypal">
-                                        PayPal
+                                        <input type="radio" name="paymentMethod" [(ngModel)]="orderForm.paymentMethod" value="vnpay">
+                                        VNPay
                                     </label>
                                 </div>
+                            </div>
+
+                            <!-- Loading indicator during payment processing -->
+                            <div *ngIf="isProcessingPayment" class="payment-processing text-center my-3">
+                                <div>
+                                    <i class="fa fa-spinner fa-spin" style="font-size: 24px;"></i>
+                                </div>
+                                <div class="mt-2">Processing payment...</div>
+                            </div>
                             
-                            <button type="submit" class="site-btn" (click)="placeOrder()">PLACE ORDER</button>
+                            <!-- Regular Checkout Button -->
+                            <button *ngIf="!isProcessingPayment && (orderForm.paymentMethod === 'check' || orderForm.paymentMethod === 'vnpay')" 
+                                type="submit" class="site-btn" (click)="placeOrder()">
+                                PLACE ORDER
+                            </button>
                         </div>
                     </div>
                 </div>
