@@ -1,0 +1,14 @@
+.stock-error {
+    color: #f44336;
+    font-size: 14px;
+    margin-top: 5px;
+    font-weight: 500;
+}
+
+.has-error input {
+    border-color: #f44336 !important;
+}
+
+.mt-2 {
+    margin-top: 0.5rem !important;
+}
