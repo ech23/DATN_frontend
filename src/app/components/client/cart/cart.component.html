@@ -1,4 +1,3 @@
-
 <p-toast></p-toast>
 
 
@@ -44,10 +43,13 @@
                                 </td>
                                 <td class="shoping__cart__quantity">
                                     <div class="quantity">
-                                        <div class="pro-qty">
+                                        <div class="pro-qty" [ngClass]="{'has-error': hasStockError(product)}">
                                             <span class="dec qtybtn" (click)="subtractQuantity(product)">-</span>
                                             <input type="text" [ngModel]="product.quantity" (change)="updateQuantity(product,$event)" min="1">
                                             <span class="inc qtybtn" (click)="plusQuantity(product)">+</span>
+                                        </div>
+                                        <div *ngIf="hasStockError(product)" class="stock-error mt-2">
+                                            {{ cartService.getStockError(product.id) }}
                                         </div>
                                     </div>
                                 </td>

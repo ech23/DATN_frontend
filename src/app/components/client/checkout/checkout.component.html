@@ -97,6 +97,12 @@
                             <div class="checkout__order__subtotal">Subtotal <span>{{cartService.totalPrice | currency}}</span></div>
                             <div class="checkout__order__sale">Sale <span>0%</span></div>
                             <div class="checkout__order__total">Total <span>{{cartService.total | currency }}</span></div>
+                            
+                            <div *ngIf="hasStockIssues" class="stock-warning">
+                                <p><i class="pi pi-exclamation-triangle" style="color: #f59e0b"></i> 
+                                   Your cart contains items with stock issues. Please update quantities before checkout.</p>
+                            </div>
+                            
                             <p>Please select your payment method below:</p>
                             <div class="payment-methods">
                                 <div class="checkout__input__radio">
@@ -123,7 +129,7 @@
                             
                             <!-- Regular Checkout Button -->
                             <button *ngIf="!isProcessingPayment && (orderForm.paymentMethod === 'check' || orderForm.paymentMethod === 'vnpay')" 
-                                type="submit" class="site-btn" (click)="placeOrder()">
+                                type="submit" class="site-btn" [disabled]="hasStockIssues" (click)="placeOrder()">
                                 PLACE ORDER
                             </button>
                         </div>

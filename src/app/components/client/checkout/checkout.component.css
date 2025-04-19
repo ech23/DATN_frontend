@@ -11,3 +11,29 @@
 .checkout__input__radio {
     margin-bottom: 10px;
 }
+
+.stock-warning {
+    background-color: #fff3cd;
+    color: #856404;
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    border-left: 5px solid #f59e0b;
+}
+
+.stock-warning p {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    font-weight: 500;
+}
+
+.stock-warning i {
+    margin-right: 10px;
+    font-size: 18px;
+}
+
+button:disabled {
+    background-color: #cccccc !important;
+    cursor: not-allowed !important;
+}

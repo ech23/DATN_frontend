@@ -49,7 +49,14 @@ export class ProductService {
   }
 
   getProdct(id: number):Observable<any>{
+    if (id === null || id === undefined) {
+      throw new Error('Product ID cannot be null or undefined');
+    }
     return this.http.get(PRODUCT_API + id,httpOptions);
+  }
+
+  getProductStock(id: number): Observable<any> {
+    return this.http.get(PRODUCT_API + 'stock/' + id, httpOptions);
   }
 
   createProduct(name:string,description: string,price: string,quantity:number,categoryId: number,imageIds: Array<string>):Observable<any>{

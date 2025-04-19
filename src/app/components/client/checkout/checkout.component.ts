@@ -9,6 +9,7 @@ import { OrderService } from 'src/app/_service/order.service';
 import { StorageService } from 'src/app/_service/storage.service';
 import { VNPayService } from 'src/app/_service/vnpay.service';
 import { Router } from '@angular/router';
+import { finalize } from 'rxjs/operators';
 
 
 @Component({
@@ -16,11 +17,8 @@ import { Router } from '@angular/router';
   templateUrl: './checkout.component.html',
   styleUrls: ['./checkout.component.css'],
   providers: [MessageService]
-
-
 })
 export class CheckoutComponent implements OnInit {
-  
   
   heart = faHeart;
   bag = faShoppingBag;
@@ -32,6 +30,7 @@ export class CheckoutComponent implements OnInit {
   username!: string;
   totalAmount = 0;
   isProcessingPayment = false;
+  hasStockIssues = false;
 
   orderForm: any = {
     firstname: null,
@@ -60,68 +59,137 @@ export class CheckoutComponent implements OnInit {
     this.username = this.storageService.getUser().username;
     this.cartService.getItems();
     this.calculateTotal();
-    
+    this.validateCartStock();
   }
 
   calculateTotal() {
     this.totalAmount = this.cartService.items.reduce((sum, item) => sum + item.subTotal, 0);
   }
 
-  
   showDepartmentClick(){
     this.showDepartment = !this.showDepartment;
   }
 
+  validateCartStock(): void {
+    this.cartService.validateCartStock().subscribe(result => {
+      this.hasStockIssues = !result.valid;
+      
+      if (!result.valid) {
+        result.invalidItems.forEach(item => {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Stock Error',
+            detail: `${item.name}: Only ${item.availableQuantity} items in stock (you requested ${item.requestedQuantity})`,
+            sticky: true
+          });
+        });
+      }
+    });
+  }
+
   placeOrder(){
-    if (this.orderForm.paymentMethod === 'vnpay') {
-      this.processVNPayPayment();
+    // Prevent order if there are stock issues
+    if (this.hasStockIssues) {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Cannot Place Order',
+        detail: 'Please fix the stock issues in your cart before placing your order.',
+        sticky: true
+      });
       return;
     }
-
-    this.processRegularOrder();
+    
+    // Validate cart stock again before proceeding
+    this.cartService.validateCartStock().pipe(
+      finalize(() => {
+        if (this.orderForm.paymentMethod === 'vnpay') {
+          this.processVNPayPayment();
+        } else {
+          this.processRegularOrder();
+        }
+      })
+    ).subscribe(result => {
+      if (!result.valid) {
+        this.hasStockIssues = true;
+        
+        result.invalidItems.forEach(item => {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Stock Error',
+            detail: `${item.name}: Only ${item.availableQuantity} items in stock (you requested ${item.requestedQuantity})`,
+            sticky: true
+          });
+        });
+        
+        return;
+      }
+    });
   }
 
   processRegularOrder() {
-    this.cartService.items.forEach(res =>{
-      let orderDetail : OrderDetail = new OrderDetail;
+    if (this.hasStockIssues) return;
+    
+    this.listOrderDetail = [];
+    
+    this.cartService.items.forEach(res => {
+      let orderDetail: OrderDetail = new OrderDetail;
       orderDetail.name = res.name;
       orderDetail.price = res.price;
       orderDetail.quantity = res.quantity;
       orderDetail.subTotal = res.subTotal;
+      orderDetail.productId = res.id;
       this.listOrderDetail.push(orderDetail);
-      this.showSuccess("Check out Successfully!");
     });
 
-    const {firstname,lastname,country,address,town,state,postCode,phone,email,note,paymentMethod} = this.orderForm;
+    const {firstname, lastname, country, address, town, state, postCode, phone, email, note, paymentMethod} = this.orderForm;
     
-    this.orderService.placeOrder(firstname,lastname,country,address,town,state,postCode,phone,email,note,this.listOrderDetail,this.username,paymentMethod).subscribe({
+    this.orderService.placeOrder(firstname, lastname, country, address, town, state, postCode, phone, email, note, this.listOrderDetail, this.username, paymentMethod).subscribe({
       next: res => {
         this.cartService.clearCart();
+        this.showSuccess("Check out Successfully!");
       }, error: err => {
         console.log(err);
+        
+        if (err.error && err.error.message && err.error.message.includes('stock')) {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Stock Error',
+            detail: err.error.message || 'There was a stock issue with your order. Please try again.',
+            sticky: true
+          });
+        } else {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: 'Failed to place order. Please try again.'
+          });
+        }
       }
     });
   }
 
   processVNPayPayment() {
+    if (this.hasStockIssues) return;
+    
     this.isProcessingPayment = true;
-
+    this.listOrderDetail = [];
+    
     // First create the order to get the order ID
-    this.cartService.items.forEach(res =>{
-      let orderDetail : OrderDetail = new OrderDetail;
+    this.cartService.items.forEach(res => {
+      let orderDetail: OrderDetail = new OrderDetail;
       orderDetail.name = res.name;
       orderDetail.price = res.price;
       orderDetail.quantity = res.quantity;
       orderDetail.subTotal = res.subTotal;
+      orderDetail.productId = res.id;
       this.listOrderDetail.push(orderDetail);
     });
 
-    const {firstname,lastname,country,address,town,state,postCode,phone,email,note,paymentMethod} = this.orderForm;
+    const {firstname, lastname, country, address, town, state, postCode, phone, email, note, paymentMethod} = this.orderForm;
     
-    this.orderService.placeOrder(firstname,lastname,country,address,town,state,postCode,phone,email,note,this.listOrderDetail,this.username,paymentMethod).subscribe({
+    this.orderService.placeOrder(firstname, lastname, country, address, town, state, postCode, phone, email, note, this.listOrderDetail, this.username, paymentMethod).subscribe({
       next: res => {
-        const orderId = res.id ;
-        
+        const orderId = res.id;
         
         // Generate VNPay payment URL
         this.vnpayService.createPaymentUrl(orderId).subscribe({
@@ -153,11 +221,21 @@ export class CheckoutComponent implements OnInit {
       error: err => {
         this.isProcessingPayment = false;
         console.error('Order creation error:', err);
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: 'Failed to create order. Please try again.'
-        });
+        
+        if (err.error && err.error.message && err.error.message.includes('stock')) {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Stock Error',
+            detail: err.error.message || 'There was a stock issue with your order. Please try again.',
+            sticky: true
+          });
+        } else {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: 'Failed to create order. Please try again.'
+          });
+        }
       }
     });
   }
