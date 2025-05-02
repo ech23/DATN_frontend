@@ -1,47 +1,257 @@
+<p-toast></p-toast>
+<p-confirmDialog [style]="{width: '450px'}" acceptLabel="Có" rejectLabel="Không"></p-confirmDialog>
+
 <div class="card">
-    <p-table #dt [value]="listOrder" [rows]="10" [paginator]="true" [globalFilterFields]="['firstname','lastname','address']" [tableStyle]="{'min-width': '75rem'}"
-        [rowHover]="true" dataKey="id"
-        currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries" [showCurrentPageReport]="true">
+    <div class="card-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <h5 class="m-0">Quản lý đơn hàng</h5>
+            <div>
+                <button pButton pRipple type="button" icon="pi pi-refresh"
+                    class="p-button-outlined p-button-info mr-2"
+                    (click)="refreshOrders()"
+                    pTooltip="Làm mới"></button>
+            </div>
+        </div>
+    </div>
+
+    <p-table #dt [value]="listOrder" [rows]="10" [paginator]="true"
+        [globalFilterFields]="['id', 'firstname','lastname','address','email','phone']"
+        [tableStyle]="{'min-width': '75rem'}"
+        [rowHover]="true" dataKey="id" [loading]="loading"
+        currentPageReportTemplate="Hiển thị {first} đến {last} của {totalRecords} đơn hàng"
+        [showCurrentPageReport]="true">
         <ng-template pTemplate="caption">
             <div class="flex align-items-center justify-content-between">
-                <h5 class="m-0">Manage Products</h5>
                 <span class="p-input-icon-left">
                     <i class="pi pi-search"></i>
-                    <input pInputText type="text" (input)="dt.filterGlobal($any($event.target).value, 'contains')" placeholder="Tìm kiếm" />`
+                    <input pInputText type="text" (input)="dt.filterGlobal($any($event.target).value, 'contains')" placeholder="Tìm kiếm..." />
                 </span>
             </div>
         </ng-template>
         <ng-template pTemplate="header">
             <tr>
-                <th style="width: 4rem">
-                    <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
-                </th>
-                <th pSortableColumn="name">Customer <p-sortIcon field="name"></p-sortIcon></th>
-                <th pSortableColumn="country">Country<p-sortIcon field="country"></p-sortIcon></th>
-                <th pSortableColumn="address">Address <p-sortIcon field="address"></p-sortIcon></th>
-                <!-- <th pSortableColumn="town">Town/City <p-sortIcon field="town"></p-sortIcon></th>
-                <th pSortableColumn="state">Country/State<p-sortIcon field="state"></p-sortIcon></th> -->
-                <!-- <th pSortableColumn="postcode">Postcode/Zip <p-sortIcon field="postcode"></p-sortIcon></th> -->
-                <th pSortableColumn="phone">Phone <p-sortIcon field="phone"></p-sortIcon></th>
+                <th pSortableColumn="id" style="width: 9rem">Mã đơn hàng <p-sortIcon field="id"></p-sortIcon></th>
+                <th pSortableColumn="orderDate" style="width: 9rem">Ngày đặt <p-sortIcon field="orderDate"></p-sortIcon></th>
+                <th pSortableColumn="name">Khách hàng <p-sortIcon field="name"></p-sortIcon></th>
                 <th pSortableColumn="email">Email <p-sortIcon field="email"></p-sortIcon></th>
-                <th pSortableColumn="price">Total <p-sortIcon field="price"></p-sortIcon></th>
-                <th style="min-width:10rem">Status</th>
-                <th></th>
+                <th pSortableColumn="totalPrice">Tổng tiền <p-sortIcon field="totalPrice"></p-sortIcon></th>
+                <th pSortableColumn="paymentMethod">Thanh toán <p-sortIcon field="paymentMethod"></p-sortIcon></th>
+                <th pSortableColumn="paymentStatus">Trạng thái TT <p-sortIcon field="paymentStatus"></p-sortIcon></th>
+                <th pSortableColumn="orderStatus">Trạng thái <p-sortIcon field="orderStatus"></p-sortIcon></th>
+                <th style="width: 6rem">Hành động</th>
             </tr>
         </ng-template>
         <ng-template pTemplate="body" let-order>
             <tr>
-                <td style="width: 4rem">
-                    <p-tableCheckbox [value]="order"></p-tableCheckbox>
+                <td><strong>{{order?.id}}</strong></td>
+                <td>{{order?.orderDate | date:'dd/MM/yyyy'}}</td>
+                <td>{{order?.firstname}} {{order?.lastname}}</td>
+                <td>{{order?.email}}</td>
+                <td>{{order?.totalPrice | currency:'VND':'symbol':'1.0-0'}}</td>
+                <td>{{getPaymentMethodLabel(order?.paymentMethod)}}</td>
+                <td>
+                    <p-tag [value]="getPaymentStatusLabel(order?.paymentStatus)"
+                        [severity]="getPaymentStatusSeverity(order?.paymentStatus)"
+                        [style]="{cursor: 'pointer'}"
+                        (click)="opPayment.toggle($event)">
+                    </p-tag>
+                    <p-overlayPanel #opPayment [showTransitionOptions]="'120ms'" [hideTransitionOptions]="'120ms'">
+                        <ng-template pTemplate="content">
+                            <div class="status-selection p-2">
+                                <h6 class="mb-3">Cập nhật trạng thái thanh toán</h6>
+                                <div class="status-options">
+                                    <button *ngFor="let status of paymentStatuses"
+                                        pButton pRipple
+                                        [label]="status.label"
+                                        [icon]="status.icon"
+                                        [class]="'p-button-' + getPaymentStatusSeverity(status.value) + ' p-button-outlined m-1'"
+                                        (click)="updatePaymentStatus(order, status.value); opPayment.hide()"
+                                        [disabled]="order?.paymentStatus === status.value"></button>
+                                </div>
+                            </div>
+                        </ng-template>
+                    </p-overlayPanel>
                 </td>
-                <td>{{order.firstname}} {{order.lastname}}</td>
-                <td>{{order.country}}</td>
-                <td>{{order.address}}</td>
-                <td>{{order.phone}}</td>
-                <td>{{order.email}}</td>
-                <td>{{order.totalPrice}}</td>
-                <td><button pButton type="button" label="Waiting For Delivery" class="p-button-success"></button></td>
+                <td>
+                    <p-tag [value]="getStatusLabel(order?.orderStatus)"
+                        [severity]="getStatusSeverity(order?.orderStatus)"
+                        [icon]="getStatusIcon(order?.orderStatus)"
+                        [style]="{cursor: 'pointer'}"
+                        (click)="op.toggle($event)">
+                    </p-tag>
+                    <p-overlayPanel #op [showTransitionOptions]="'120ms'" [hideTransitionOptions]="'120ms'">
+                        <ng-template pTemplate="content">
+                            <div class="status-selection p-2">
+                                <h6 class="mb-3">Cập nhật trạng thái</h6>
+                                <div class="status-options">
+                                    <button *ngFor="let status of orderStatuses"
+                                        pButton pRipple
+                                        [label]="status.label"
+                                        [icon]="status.icon"
+                                        [class]="'p-button-' + getStatusSeverity(status.value) + ' p-button-outlined m-1'"
+                                        (click)="updateOrderStatus(order, status.value); op.hide()"
+                                        [disabled]="order?.orderStatus === status.value"></button>
+                                </div>
+                            </div>
+                        </ng-template>
+                    </p-overlayPanel>
+                </td>
+                <td>
+                    <button pButton pRipple icon="pi pi-search" class="p-button-rounded p-button-info mr-2"
+                        (click)="openOrderDetails(order)" pTooltip="Xem chi tiết"></button>
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="emptymessage">
+            <tr>
+                <td colspan="9" class="text-center p-4">
+                    <div class="p-d-flex p-flex-column p-ai-center">
+                        <i class="pi pi-shopping-bag" style="font-size: 3rem; opacity: 0.3;"></i>
+                        <p class="mt-3">Không tìm thấy đơn hàng nào</p>
+                    </div>
+                </td>
             </tr>
         </ng-template>
     </p-table>
 </div>
+
+<p-dialog [(visible)]="displayOrderDetails" [style]="{width: '850px'}" header="Chi tiết đơn hàng"
+    [modal]="true" [draggable]="false" [resizable]="false">
+    
+    <div *ngIf="loadingOrderDetails" class="loading-container p-4 text-center">
+        <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
+        <p class="mt-3">Đang tải thông tin chi tiết đơn hàng...</p>
+    </div>
+    
+    <ng-template pTemplate="content" *ngIf="selectedOrder && !loadingOrderDetails">
+        <div class="order-detail-wrapper">
+            <div class="order-status-section mb-4">
+                <div class="order-status-header d-flex justify-content-between align-items-center">
+                    <h3 class="m-0">Đơn hàng #{{selectedOrder?.id}}</h3>
+                    <p-tag [value]="getStatusLabel(selectedOrder?.orderStatus)" 
+                        [severity]="getStatusSeverity(selectedOrder?.orderStatus)" 
+                        [icon]="getStatusIcon(selectedOrder?.orderStatus)"></p-tag>
+                </div>
+            </div>
+            
+            <div class="p-grid">
+                <div class="p-col-12 mb-3">
+                    <div class="order-actions">
+                        <h5>Cập nhật trạng thái</h5>
+                        <div class="status-buttons">
+                            <button *ngFor="let status of orderStatuses" 
+                                pButton pRipple 
+                                [label]="status.label" 
+                                [icon]="status.icon" 
+                                [class]="'p-button-' + getStatusSeverity(status.value) + ' mr-2 mb-2'"
+                                (click)="updateOrderStatus(selectedOrder, status.value)"
+                                [disabled]="selectedOrder?.orderStatus === status.value"></button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="p-grid">
+                    <div class="p-col-12 p-md-6">
+                        <div class="card mb-3">
+                            <div class="card-header">
+                                <h5>Thông tin khách hàng</h5>
+                            </div>
+                            <div class="card-body">
+                                <p><strong>Họ tên:</strong> {{selectedOrder?.firstname}} {{selectedOrder?.lastname}}</p>
+                                <p><strong>Email:</strong> {{selectedOrder?.email}}</p>
+                                <p><strong>Điện thoại:</strong> {{selectedOrder?.phone}}</p>
+                                <p><strong>Địa chỉ:</strong> {{selectedOrder?.address}}, {{selectedOrder?.town}}, {{selectedOrder?.state}}, {{selectedOrder?.country}}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-col-12 p-md-6">
+                        <div class="card mb-3">
+                            <div class="card-header">
+                                <h5>Thông tin đơn hàng</h5>
+                            </div>
+                            <div class="card-body">
+                                <p><strong>Ngày đặt:</strong> {{selectedOrder?.orderDate | date:'dd/MM/yyyy HH:mm'}}</p>
+                                <p><strong>Tổng tiền:</strong> {{selectedOrder?.totalPrice | currency:'VND':'symbol':'1.0-0'}}</p>
+                                <p><strong>Phương thức thanh toán:</strong> {{getPaymentMethodLabel(selectedOrder?.paymentMethod)}}</p>
+                                <p><strong>Trạng thái thanh toán:</strong>
+                                    <p-tag [value]="getPaymentStatusLabel(selectedOrder?.paymentStatus)"
+                                        [severity]="getPaymentStatusSeverity(selectedOrder?.paymentStatus)"
+                                        [style]="{cursor: 'pointer'}"
+                                        (click)="opDetailPayment.toggle($event)"></p-tag>
+                                    <p-overlayPanel #opDetailPayment [showTransitionOptions]="'120ms'" [hideTransitionOptions]="'120ms'">
+                                        <ng-template pTemplate="content">
+                                            <div class="status-selection p-2">
+                                                <h6 class="mb-3">Cập nhật trạng thái thanh toán</h6>
+                                                <div class="status-options">
+                                                    <button *ngFor="let status of paymentStatuses"
+                                                        pButton pRipple
+                                                        [label]="status.label"
+                                                        [icon]="status.icon"
+                                                        [class]="'p-button-' + getPaymentStatusSeverity(status.value) + ' p-button-outlined m-1'"
+                                                        (click)="updatePaymentStatus(selectedOrder, status.value); opDetailPayment.hide()"
+                                                        [disabled]="selectedOrder?.paymentStatus === status.value"></button>
+                                                </div>
+                                            </div>
+                                        </ng-template>
+                                    </p-overlayPanel>
+                                </p>
+                                <p *ngIf="selectedOrder?.note"><strong>Ghi chú:</strong> {{selectedOrder?.note}}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="p-col-12">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="m-0">Sản phẩm</h5>
+                            <span class="badge" [ngClass]="{'badge-success': orderDetails.length > 0, 'badge-warning': !orderDetails.length}">
+                                {{orderDetails.length || 0}} sản phẩm
+                            </span>
+                        </div>
+                        <div class="card-body p-0">
+                            <p-table [value]="orderDetails" styleClass="p-datatable-sm">
+                                <ng-template pTemplate="header">
+                                    <tr>
+                                        <th>Mã sản phẩm</th>
+                                        <th>Sản phẩm</th>
+                                        <th style="width: 20%">Đơn giá</th>
+                                        <th style="width: 15%">Số lượng</th>
+                                        <th style="width: 20%">Thành tiền</th>
+                                    </tr>
+                                </ng-template>
+                                <ng-template pTemplate="body" let-product>
+                                    <tr>
+                                        <td>{{product?.productId || 'N/A'}}</td>
+                                        <td>{{product?.name}}</td>
+                                        <td>{{product?.price | currency:'VND':'symbol':'1.0-0'}}</td>
+                                        <td>{{product?.quantity}}</td>
+                                        <td>{{product?.subTotal | currency:'VND':'symbol':'1.0-0'}}</td>
+                                    </tr>
+                                </ng-template>
+                                <ng-template pTemplate="footer">
+                                    <tr>
+                                        <td colspan="4" class="text-right"><strong>Tổng cộng:</strong></td>
+                                        <td><strong>{{selectedOrder?.totalPrice | currency:'VND':'symbol':'1.0-0'}}</strong></td>
+                                    </tr>
+                                </ng-template>
+                                <ng-template pTemplate="emptymessage">
+                                    <tr>
+                                        <td colspan="5" class="text-center p-4">
+                                            <i class="pi pi-inbox" style="font-size: 2rem; color: #ddd;"></i>
+                                            <p>Không tìm thấy thông tin chi tiết sản phẩm</p>
+                                        </td>
+                                    </tr>
+                                </ng-template>
+                            </p-table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </ng-template>
+    <ng-template pTemplate="footer">
+        <button pButton pRipple label="Đóng" icon="pi pi-times" class="p-button-text" (click)="displayOrderDetails=false"></button>
+    </ng-template>
+</p-dialog>

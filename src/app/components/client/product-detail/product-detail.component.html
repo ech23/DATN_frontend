@@ -41,7 +41,7 @@
                         <fa-icon [icon]="star_half"></fa-icon>
                         <span>(18 reviews)</span>
                     </div>
-                    <div class="product__details__price">{{product.price | currency}}</div>
+                    <div class="product__details__price">{{product.price | currency:'VND'}}</div>
                     <p>{{product.description}}</p>
                     <div class="product__details__quantity">
                         <div class="quantity">
@@ -157,7 +157,7 @@
                     </div>
                     <div class="featured__item__text">
                         <h6><a href="javascript:void(0)">{{product.name}}</a></h6>
-                        <h5>{{product.price | currency}}</h5>
+                        <h5>{{product.price | currency:'VND'}}</h5>
                     </div>
                 </div>
             </div>

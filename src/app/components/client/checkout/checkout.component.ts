@@ -104,6 +104,7 @@ export class CheckoutComponent implements OnInit {
       finalize(() => {
         if (this.orderForm.paymentMethod === 'vnpay') {
           this.processVNPayPayment();
+          
         } else {
           this.processRegularOrder();
         }
@@ -125,49 +126,7 @@ export class CheckoutComponent implements OnInit {
       }
     });
   }
-
-  processRegularOrder() {
-    if (this.hasStockIssues) return;
-    
-    this.listOrderDetail = [];
-    
-    this.cartService.items.forEach(res => {
-      let orderDetail: OrderDetail = new OrderDetail;
-      orderDetail.name = res.name;
-      orderDetail.price = res.price;
-      orderDetail.quantity = res.quantity;
-      orderDetail.subTotal = res.subTotal;
-      orderDetail.productId = res.id;
-      this.listOrderDetail.push(orderDetail);
-    });
-
-    const {firstname, lastname, country, address, town, state, postCode, phone, email, note, paymentMethod} = this.orderForm;
-    
-    this.orderService.placeOrder(firstname, lastname, country, address, town, state, postCode, phone, email, note, this.listOrderDetail, this.username, paymentMethod).subscribe({
-      next: res => {
-        this.cartService.clearCart();
-        this.showSuccess("Check out Successfully!");
-      }, error: err => {
-        console.log(err);
-        
-        if (err.error && err.error.message && err.error.message.includes('stock')) {
-          this.messageService.add({
-            severity: 'error',
-            summary: 'Stock Error',
-            detail: err.error.message || 'There was a stock issue with your order. Please try again.',
-            sticky: true
-          });
-        } else {
-          this.messageService.add({
-            severity: 'error',
-            summary: 'Error',
-            detail: 'Failed to place order. Please try again.'
-          });
-        }
-      }
-    });
-  }
-
+  
   processVNPayPayment() {
     if (this.hasStockIssues) return;
     
@@ -194,11 +153,13 @@ export class CheckoutComponent implements OnInit {
         // Generate VNPay payment URL
         this.vnpayService.createPaymentUrl(orderId).subscribe({
           next: paymentData => {
+             
             this.isProcessingPayment = false;
             
             if (paymentData && paymentData.paymentUrl) {
               // Redirect to VNPay payment gateway
               window.location.href = paymentData.paymentUrl;
+              this.cartService.clearCart();
             } else {
               this.messageService.add({
                 severity: 'error',
@@ -240,6 +201,47 @@ export class CheckoutComponent implements OnInit {
     });
   }
 
+  processRegularOrder() {
+    if (this.hasStockIssues) return;
+    
+    this.listOrderDetail = [];
+    
+    this.cartService.items.forEach(res => {
+      let orderDetail: OrderDetail = new OrderDetail;
+      orderDetail.name = res.name;
+      orderDetail.price = res.price;
+      orderDetail.quantity = res.quantity;
+      orderDetail.subTotal = res.subTotal;
+      orderDetail.productId = res.id;
+      this.listOrderDetail.push(orderDetail);
+    });
+
+    const {firstname, lastname, country, address, town, state, postCode, phone, email, note, paymentMethod} = this.orderForm;
+    
+    this.orderService.placeOrder(firstname, lastname, country, address, town, state, postCode, phone, email, note, this.listOrderDetail, this.username, paymentMethod).subscribe({
+      next: _res => {
+        this.cartService.clearCart();
+        this.showSuccess("Check out Successfully!");
+      }, error: err => {
+        console.log(err);
+        
+        if (err.error && err.error.message && err.error.message.includes('stock')) {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Stock Error',
+            detail: err.error.message || 'There was a stock issue with your order. Please try again.',
+            sticky: true
+          });
+        } else {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: 'Failed to place order. Please try again.'
+          });
+        }
+      }
+    });
+  }
   showSuccess(text: string) {
     this.messageService.add({severity:'success', summary: 'Success', detail: text});
   }

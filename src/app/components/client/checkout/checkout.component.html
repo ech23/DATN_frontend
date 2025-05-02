@@ -92,11 +92,11 @@
                             <h4>Your Order</h4>
                             <div class="checkout__order__products">Products <span>Total</span></div>
                             <ul>
-                                <li *ngFor="let item of cartService.items">{{item.name}} <span>{{item.subTotal | currency}}</span></li>
+                                <li *ngFor="let item of cartService.items">{{item.name}} <span>{{item.subTotal | currency:'VND'}}</span></li>
                             </ul>
-                            <div class="checkout__order__subtotal">Subtotal <span>{{cartService.totalPrice | currency}}</span></div>
+                            <div class="checkout__order__subtotal">Subtotal <span>{{cartService.totalPrice | currency:'VND'}}</span></div>
                             <div class="checkout__order__sale">Sale <span>0%</span></div>
-                            <div class="checkout__order__total">Total <span>{{cartService.total | currency }}</span></div>
+                            <div class="checkout__order__total">Total <span>{{cartService.total | currency:'VND' }}</span></div>
                             
                             <div *ngIf="hasStockIssues" class="stock-warning">
                                 <p><i class="pi pi-exclamation-triangle" style="color: #f59e0b"></i> 
@@ -107,7 +107,7 @@
                             <div class="payment-methods">
                                 <div class="checkout__input__radio">
                                     <label>
-                                        <input type="radio" name="paymentMethod" [(ngModel)]="orderForm.paymentMethod" value="check">
+                                        <input type="radio" name="paymentMethod" [(ngModel)]="orderForm.paymentMethod" value="COD">
                                         Thanh toán tiền mặt
                                     </label>
                                 </div>
@@ -128,7 +128,7 @@
                             </div>
                             
                             <!-- Regular Checkout Button -->
-                            <button *ngIf="!isProcessingPayment && (orderForm.paymentMethod === 'check' || orderForm.paymentMethod === 'vnpay')" 
+                            <button *ngIf="!isProcessingPayment && (orderForm.paymentMethod === 'COD' || orderForm.paymentMethod === 'vnpay')" 
                                 type="submit" class="site-btn" [disabled]="hasStockIssues" (click)="placeOrder()">
                                 PLACE ORDER
                             </button>

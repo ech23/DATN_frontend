@@ -39,7 +39,7 @@
                                     <h5>{{product.name}}</h5>
                                 </td>
                                 <td class="shoping__cart__price">
-                                    {{product.price | currency}}
+                                    {{product.price | currency:'VND':'symbol':'1.0-0'}}
                                 </td>
                                 <td class="shoping__cart__quantity">
                                     <div class="quantity">
@@ -54,7 +54,7 @@
                                     </div>
                                 </td>
                                 <td class="shoping__cart__total">
-                                    {{product.subTotal | currency}}
+                                    {{product.subTotal | currency:'VND':'symbol':'1.0-0'}}
                                 </td>
                                 <td class="shoping__cart__item__close">
                                     <button pButton pRipple type="button" icon="pi pi-times" class="p-button-rounded p-button-danger p-button-text" (click)="removeFromCart(product)"></button>
@@ -86,9 +86,9 @@
                 <div class="shoping__checkout">
                     <h5>Cart Total</h5>
                     <ul>
-                        <li>Subtotal <span>{{cartService.totalPrice | currency}}</span></li>
+                        <li>Subtotal <span>{{cartService.totalPrice | currency:'VND'}}</span></li>
                         <li>Sale <span>- 0%</span></li>
-                        <li>Total <span>{{cartService.total | currency}}</span></li>
+                        <li>Total <span>{{cartService.total | currency:'VND'}}</span></li>
                     </ul>
                     <a href="javascript:void(0)" routerLink="/checkout" class="primary-btn">PROCEED TO CHECKOUT</a>
                 </div>

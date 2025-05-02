@@ -112,14 +112,14 @@
                                             </div>
                                             <div class="cart-box-text">
                                                 <a href="javascript:void(0)">{{product.name}}</a>
-                                                <div><span>{{product.quantity}} x </span>{{product.price | currency}}</div>
+                                                <div><span>{{product.quantity}} x </span>{{product.price | currency:'VND'}}</div>
                                             </div>
                                             <button pButton pRipple type="button" icon="pi pi-times" class="p-button-rounded p-button-danger p-button-text" (click)="removeFromCart(product)"></button>
                                         </li>
                                     </ul>
                                     <p-divider></p-divider>
                                     <div class="text-center">
-                                        <strong>Tổng: </strong><span class="ml-2">{{cartService.getTotalPrice() | currency}}</span>
+                                        <strong>Tổng: </strong><span class="ml-2">{{cartService.getTotalPrice() | currency:'VND'}}</span>
                                     </div>
                                     <p-divider></p-divider>
                                     <div class="cart-button">
