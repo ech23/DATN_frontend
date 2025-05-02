@@ -39,7 +39,7 @@
                 </td>
                 <td>{{product.name}}</td>
                 <td><img src="{{'data:image/jpg;base64,' +product.images[0].data}}" [alt]="product.name" width="100" class="shadow-4" /></td>
-                <td>{{product.price | currency:'USD'}}</td>
+                <td>{{product.price | currency:'VND'}}</td>
                 <td>{{product.category.name}}</td>
                 <td>
                     <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2" (click)="openUpdate(product)"></button>
@@ -83,7 +83,7 @@
         <div class="formgrid grid">
             <div class="field col">
                 <label for="price">Price</label>
-                <p-inputNumber id="price" [(ngModel)]="productForm.price" mode="currency" currency="USD" locale="en-US"></p-inputNumber>
+                <p-inputNumber id="price" [(ngModel)]="productForm.price" mode="currency" currency="VND" locale="en-US"></p-inputNumber>
             </div>
             <div class="field col">
                 <label for="quantity">Quantity</label>

@@ -1,0 +1,211 @@
+/* Utility classes */
+.m-0 {
+    margin: 0 !important;
+}
+
+.ml-2 {
+    margin-left: 0.5rem !important;
+}
+
+.mt-3 {
+    margin-top: 1rem !important;
+}
+
+.mb-3 {
+    margin-bottom: 1rem !important;
+}
+
+.mb-4 {
+    margin-bottom: 1.5rem !important;
+}
+
+.p-0 {
+    padding: 0 !important;
+}
+
+.p-4 {
+    padding: 1.5rem !important;
+}
+
+.p-5 {
+    padding: 3rem !important;
+}
+
+.py-5 {
+    padding-top: 3rem !important;
+    padding-bottom: 3rem !important;
+}
+
+.text-center {
+    text-align: center !important;
+}
+
+.text-right {
+    text-align: right !important;
+}
+
+.d-flex {
+    display: flex !important;
+}
+
+.justify-content-between {
+    justify-content: space-between !important;
+}
+
+.align-items-center {
+    align-items: center !important;
+}
+
+/* Container styling */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 15px;
+}
+
+/* Card styling */
+.card {
+    background-color: #fff;
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+}
+
+/* Order detail styling */
+.order-detail-wrapper {
+    padding: 1rem;
+}
+
+.order-status-section {
+    padding: 1rem;
+    background-color: #f8f9fa;
+    border-radius: 0.5rem;
+}
+
+.status-description {
+    color: #555;
+    font-weight: 500;
+    margin: 0;
+}
+
+.status-description i {
+    margin-right: 0.5rem;
+}
+
+.info-card {
+    border-radius: 0.5rem;
+    border: 1px solid #e9ecef;
+    overflow: hidden;
+}
+
+.info-card-header {
+    padding: 0.75rem 1rem;
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.info-card-header h5 {
+    margin: 0;
+    font-weight: 600;
+    color: #333;
+}
+
+.info-card-body {
+    padding: 1rem;
+}
+
+.info-card-body p {
+    margin-bottom: 0.5rem;
+}
+
+.info-card-body p:last-child {
+    margin-bottom: 0;
+}
+
+/* Product table styling */
+.product-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.product-table th, 
+.product-table td {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.product-table th {
+    text-align: left;
+    font-weight: 600;
+    background-color: #f8f9fa;
+}
+
+.product-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.product-table tfoot {
+    background-color: #f8f9fa;
+    font-weight: bold;
+}
+
+/* Loading container */
+.loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    min-height: 200px;
+}
+
+.loading-container p {
+    margin-top: 1rem;
+    color: #666;
+}
+
+/* Badge styling */
+.badge {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    line-height: 1;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: 0.25rem;
+    color: #fff;
+    background-color: #6c757d;
+}
+
+.badge-success {
+    background-color: #28a745;
+}
+
+.badge-warning {
+    background-color: #ffc107;
+    color: #212529;
+}
+
+/* Responsive row */
+.row {
+    display: flex;
+    flex-wrap: wrap;
+    margin-right: -15px;
+    margin-left: -15px;
+}
+
+.col-md-6 {
+    position: relative;
+    width: 100%;
+    padding-right: 15px;
+    padding-left: 15px;
+}
+
+@media (min-width: 768px) {
+    .col-md-6 {
+        flex: 0 0 50%;
+        max-width: 50%;
+    }
+}

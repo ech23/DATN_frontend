@@ -40,7 +40,7 @@ const routes: Routes = [
       {path:'',component:HomeComponent},
       {path:'cart',component: CartComponent},
       {path:'checkout',component: CheckoutComponent,canActivate: [AuthGuardService]},
-      {path:'payment-result',component: PaymentResultComponent,canActivate: [AuthGuardService]},
+      {path:'vnpay/payment-result',component: PaymentResultComponent,canActivate: [AuthGuardService]},
       {path:'category/:id',component: ShopComponent},
       {path:'product/:id',component:ProductDetailComponent},
       {path:'blog',component: BlogClientComponent},

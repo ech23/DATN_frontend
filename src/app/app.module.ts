@@ -50,6 +50,10 @@ import { LoginPageComponent } from './components/client/login-page/login-page.co
 import { ChatbotComponent } from './components/client/chatbot/chatbot.component';
 import { VNPayService } from './_service/vnpay.service';
 import { PaymentResultComponent } from './components/client/payment-result/payment-result.component';
+import { TagModule } from 'primeng/tag';
+import { MenuModule } from 'primeng/menu';
+import { TooltipModule } from 'primeng/tooltip';
+import { ConfirmationService, MessageService } from 'primeng/api';
 
 @NgModule({
   declarations: [
@@ -103,9 +107,12 @@ import { PaymentResultComponent } from './components/client/payment-result/payme
     PasswordModule,
     SliderModule,
     DataViewModule,
-    MultiSelectModule
+    MultiSelectModule,
+    TagModule,
+    MenuModule,
+    TooltipModule
   ],
-  providers: [VNPayService],
+  providers: [VNPayService, MessageService, ConfirmationService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

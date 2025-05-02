@@ -1,0 +1,136 @@
+.m-0 {
+    margin: 0 !important;
+}
+
+.mr-2 {
+    margin-right: 0.5rem !important;
+}
+
+.mb-2 {
+    margin-bottom: 0.5rem !important;
+}
+
+.mb-3 {
+    margin-bottom: 1rem !important;
+}
+
+.m-1 {
+    margin: 0.25rem !important;
+}
+
+.p-2 {
+    padding: 0.5rem !important;
+}
+
+.p-4 {
+    padding: 1.5rem !important;
+}
+
+.mt-3 {
+    margin-top: 1rem !important;
+}
+
+.d-flex {
+    display: flex !important;
+}
+
+.justify-content-between {
+    justify-content: space-between !important;
+}
+
+.align-items-center {
+    align-items: center !important;
+}
+
+.text-center {
+    text-align: center !important;
+}
+
+.text-right {
+    text-align: right !important;
+}
+
+.p-0 {
+    padding: 0 !important;
+}
+
+.card-header {
+    padding: 1rem;
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.card-body {
+    padding: 1rem;
+}
+
+.status-selection h6 {
+    font-weight: 600;
+    margin-top: 0;
+}
+
+.status-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+}
+
+/* Loading container */
+.loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    min-height: 200px;
+}
+
+.loading-container p {
+    margin-top: 1rem;
+    color: #666;
+}
+
+/* Badge styling */
+.badge {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    line-height: 1;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: 0.25rem;
+    color: #fff;
+    background-color: #6c757d;
+}
+
+.badge-success {
+    background-color: #28a745;
+}
+
+.badge-warning {
+    background-color: #ffc107;
+    color: #212529;
+}
+
+/* Order detail wrapper */
+.order-detail-wrapper {
+    padding: 1rem;
+}
+
+/* Status section styling */
+.order-status-section {
+    padding: 1rem;
+    background-color: #f8f9fa;
+    border-radius: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+/* Responsive styling for dialog */
+@media screen and (max-width: 768px) {
+    .status-buttons button {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+}

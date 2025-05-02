@@ -1,11 +1,13 @@
 import { Component, OnInit } from '@angular/core';
+import { MessageService } from 'primeng/api';
 import { StorageService } from 'src/app/_service/storage.service';
 import { UserService } from 'src/app/_service/user.service';
 
 @Component({
   selector: 'app-user-detail',
   templateUrl: './user-detail.component.html',
-  styleUrls: ['./user-detail.component.css']
+  styleUrls: ['./user-detail.component.css'],
+  providers: [MessageService]
 })
 export class UserDetailComponent implements OnInit {
 
@@ -29,7 +31,7 @@ export class UserDetailComponent implements OnInit {
     newPassword: null
   }
 
-  constructor(private storageService: StorageService,private userService: UserService){}
+  constructor(private storageService: StorageService,private userService: UserService, private messageService: MessageService){}
 
   ngOnInit(): void {
     this.username = this.storageService.getUser().username;
@@ -57,7 +59,9 @@ export class UserDetailComponent implements OnInit {
   updateProfile(){
     const{firstname,lastname,email,country,state,address,phone} = this.updateForm;
     this.userService.updateProfile(this.username,firstname,lastname,email,country,state,address,phone).subscribe({
-      next: res =>{
+      
+      next: _res =>{
+        this.showSuccess("Update user succesfull!");
         this.getUser();
       },error: err=>{
         console.log(err);
@@ -68,7 +72,7 @@ export class UserDetailComponent implements OnInit {
   changePasswordFunc(){
     const{oldPassword,newPassword} = this.changePasswordForm;
     this.userService.changePassword(this.username,oldPassword,newPassword).subscribe({
-      next: res =>{
+      next: _res =>{
         this.getUser();
       },error: err =>{
         console.log(err);
@@ -80,5 +84,7 @@ export class UserDetailComponent implements OnInit {
   showChangePassword(){
     this.changePassword =true;
   }
-
+  showSuccess(text: string) {
+    this.messageService.add({severity:'success', summary: 'Success', detail: text});
+  }
 }
