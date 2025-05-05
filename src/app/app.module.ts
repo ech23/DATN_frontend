@@ -9,6 +9,7 @@ import { ProductComponent } from './components/admin/product/product.component';
 import { OrderComponent } from './components/admin/order/order.component';
 import { BlogComponent } from './components/admin/blog/blog.component';
 import { AccountComponent } from './components/admin/account/account.component';
+import { InventoryComponent } from './components/admin/inventory/inventory.component';
 import { IndexComponent } from './components/client/index/index.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
@@ -64,6 +65,7 @@ import { ConfirmationService, MessageService } from 'primeng/api';
     OrderComponent,
     BlogComponent,
     AccountComponent,
+    InventoryComponent,
     IndexComponent,
     HomeComponent,
     CartComponent,

@@ -54,33 +54,25 @@ export class MyOrderComponent implements OnInit {
   }
   
   openOrderDetails(order: any) {
-    console.log('Mở đơn hàng: ', order);
     this.loadingOrderDetails = true;
+    this.selectedOrder = order;
     this.displayOrderDetails = true;
     
-    // Tạm thời sử dụng order hiện tại để hiển thị thông tin cơ bản
-    this.selectedOrder = { ...order };
-    this.orderDetails = [];
-    
-    // Lấy thông tin chi tiết từ server
     this.orderService.getOrderById(order.id).subscribe({
-      next: (orderDetail) => {
-        console.log('Chi tiết trả về:', orderDetail);
-        this.selectedOrder = orderDetail;
-        this.orderDetails = orderDetail.orderDetails || [];
-        this.loadingOrderDetails = false;
-      },
-      error: (err) => {
-        console.error('Lỗi khi lấy chi tiết đơn hàng:', err);
-        this.loadingOrderDetails = false;
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Lỗi',
-          detail: 'Không thể tải thông tin chi tiết đơn hàng. Vui lòng thử lại.'
-        });
-      }
+        next: (response) => {
+            this.orderDetails = response.orderDetails;
+            this.loadingOrderDetails = false;
+        },
+        error: (error) => {
+            this.messageService.add({
+                severity: 'error',
+                summary: 'Lỗi',
+                detail: 'Không thể tải chi tiết đơn hàng'
+            });
+            this.loadingOrderDetails = false;
+        }
     });
-  }
+}
   
   getStatusLabel(status: string): string {
     if (!status) return 'Chờ xác nhận';
