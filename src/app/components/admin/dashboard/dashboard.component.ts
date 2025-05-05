@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { faFaceLaughWink, faTag } from '@fortawesome/free-solid-svg-icons';
+import { faFaceLaughWink, faTag, faBoxes } from '@fortawesome/free-solid-svg-icons';
 import {faSearch} from '@fortawesome/free-solid-svg-icons'
 import {faBell} from '@fortawesome/free-solid-svg-icons'
 import {faEnvelope} from '@fortawesome/free-solid-svg-icons'
@@ -40,6 +40,7 @@ export class DashboardComponent implements OnInit{
   gear = faGear;
   logoutIcon = faRightFromBracket;
   tag = faTag;
+  boxes = faBoxes;
 
   constructor(private storageService:StorageService,private authService:AuthService,private router: Router){}
 

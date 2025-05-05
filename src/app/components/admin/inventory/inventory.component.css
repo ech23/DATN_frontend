@@ -1,0 +1,44 @@
+:host ::ng-deep .p-button.p-button-icon-only.p-button-rounded {
+    height: 2.5rem;
+    width: 2.5rem;
+}
+
+:host ::ng-deep .p-column-filter {
+    width: 100%;
+}
+
+:host ::ng-deep .p-datatable .p-datatable-thead > tr > th {
+    text-align: left;
+    padding: 1rem;
+    font-weight: 600;
+}
+
+:host ::ng-deep .p-datatable .p-datatable-tbody > tr > td {
+    padding: 1rem;
+    vertical-align: middle;
+}
+
+.text-danger {
+    color: #f44336;
+}
+
+.font-bold {
+    font-weight: bold;
+}
+
+.text-warning {
+    color: #ff9800;
+}
+
+.low-stock-row {
+    background-color: rgba(255, 152, 0, 0.1);
+}
+
+:host ::ng-deep .p-inputnumber {
+    width: 100%;
+}
+
+.product-image {
+    max-width: 100px;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+} 

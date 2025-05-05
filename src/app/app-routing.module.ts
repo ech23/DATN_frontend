@@ -6,6 +6,7 @@ import { DashboardComponent } from './components/admin/dashboard/dashboard.compo
 import { OrderComponent } from './components/admin/order/order.component';
 import { ProductComponent } from './components/admin/product/product.component';
 import { TagComponent } from './components/admin/tag/tag.component';
+import { InventoryComponent } from './components/admin/inventory/inventory.component';
 import { BlogClientComponent } from './components/client/blog-client/blog-client.component';
 import { BlogDetailComponent } from './components/client/blog-detail/blog-detail.component';
 import { CartComponent } from './components/client/cart/cart.component';
@@ -31,7 +32,8 @@ const routes: Routes = [
       {path:'product',component:ProductComponent},
       {path:'order',component:OrderComponent},
       {path:'blog',component:BlogComponent},
-      {path:'tag',component:TagComponent}
+      {path:'tag',component:TagComponent},
+      {path:'inventory',component:InventoryComponent}
     ]
   },
   {
