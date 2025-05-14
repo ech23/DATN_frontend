@@ -42,19 +42,22 @@ export class InventoryService {
   // }
 
   adjustStock(productId: number, quantity: number, reason: string, adjustmentType: string): Observable<any> {
-    const url = `${API_URL}update/${productId}`;
-    const params = new HttpParams()
-      .set('quantity', quantity.toString())
-      .set('reason', reason)
-      .set('adjustmentType', 'ADD');
-  
-    return this.http.post(url, null, { params }).pipe(
-      catchError(error => {
-        console.error('Error adjusting stock:', error);
-        return of({ success: false, message: error.message });
-      })
-    );
-  }
+  const url = `${API_URL}adjust`;
+
+  const body = {
+    productId: productId,
+    quantity: quantity,
+    reason: reason,
+    adjustmentType: adjustmentType.toUpperCase()
+  };
+
+  return this.http.post(url, body).pipe(
+    catchError(error => {
+      console.error('Error adjusting stock:', error);
+      return of({ success: false, message: error.message });
+    })
+  );
+}
   /**
    * Get stock history for a product
    * @param productId Product ID

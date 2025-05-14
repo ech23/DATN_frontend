@@ -38,7 +38,7 @@
                 <th pSortableColumn="paymentMethod">Thanh toán <p-sortIcon field="paymentMethod"></p-sortIcon></th>
                 <th pSortableColumn="paymentStatus">Trạng thái TT <p-sortIcon field="paymentStatus"></p-sortIcon></th>
                 <th pSortableColumn="orderStatus">Trạng thái <p-sortIcon field="orderStatus"></p-sortIcon></th>
-                <th style="width: 6rem">Hành động</th>
+                <th style="width: 10rem">Thao tác</th>
             </tr>
         </ng-template>
         <ng-template pTemplate="body" let-order>
@@ -99,6 +99,8 @@
                 <td>
                     <button pButton pRipple icon="pi pi-search" class="p-button-rounded p-button-info mr-2"
                         (click)="openOrderDetails(order)" pTooltip="Xem chi tiết"></button>
+                    <button pButton pRipple icon="pi pi-file-pdf" class="p-button-rounded p-button-success"
+                        (click)="openOrderDetailsAndExport(order)" pTooltip="Xuất hóa đơn"></button>
                 </td>
             </tr>
         </ng-template>
@@ -252,6 +254,9 @@
         </div>
     </ng-template>
     <ng-template pTemplate="footer">
+        <button pButton pRipple label="Xuất hóa đơn" icon="pi pi-file-pdf" 
+                class="p-button-success mr-2" (click)="exportInvoice()"
+                [disabled]="loadingOrderDetails || !selectedOrder"></button>
         <button pButton pRipple label="Đóng" icon="pi pi-times" class="p-button-text" (click)="displayOrderDetails=false"></button>
     </ng-template>
 </p-dialog>

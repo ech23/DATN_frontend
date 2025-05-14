@@ -16,6 +16,6 @@ export class Order {
     orderStatus?: string;
     paymentMethod?: string;
     paymentStatus?: string;
-    orderDetails?: any[];
-    createdAt?: Date;
+    orderDetailss?: any[];
+    
 }

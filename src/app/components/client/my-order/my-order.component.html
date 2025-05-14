@@ -44,7 +44,7 @@
             </ng-template>
             <ng-template pTemplate="body" let-order>
                 <tr>
-                    <td>{{order?.orderDate | date:'dd/MM/yyyy'}}</td>
+                    <td>{{order.orderDate | date:'dd/MM/yyyy'}}</td>
                     <td>{{order.totalPrice | currency:'VND':'symbol':'1.0-0'}}</td>
                     <td>{{getPaymentMethodLabel(order.paymentMethod)}}</td>
                     <td>
@@ -88,26 +88,45 @@
     </div>
     
     <ng-template pTemplate="content" *ngIf="selectedOrder && !loadingOrderDetails">
+        
         <div class="order-detail-wrapper">
             <!-- Order Status Section -->
             <div class="order-status-section mb-4">
                 <div class="order-status-header d-flex justify-content-between align-items-center">
-                    <h3 class="m-0">Đơn hàng #{{selectedOrder?.id}}</h3>
+                    <h3 class="m-0">Đơn hàng #{{selectedOrder.id}}</h3>
                     <div class="order-status-tags">
-                        <p-tag [value]="getStatusLabel(selectedOrder?.orderStatus)" 
-                            [severity]="getStatusSeverity(selectedOrder?.orderStatus)"
-                            [icon]="getStatusIcon(selectedOrder?.orderStatus)"
+                        <p-tag [value]="getStatusLabel(selectedOrder.orderStatus)" 
+                            [severity]="getStatusSeverity(selectedOrder.orderStatus)"
+                            [icon]="getStatusIcon(selectedOrder.orderStatus)"
                             class="mr-2">
                         </p-tag>
-                        <p-tag [value]="getPaymentStatusLabel(selectedOrder?.paymentStatus)"
-                            [severity]="getPaymentStatusSeverity(selectedOrder?.paymentStatus)"
+                        <p-tag [value]="getPaymentStatusLabel(selectedOrder.paymentStatus)"
+                            [severity]="getPaymentStatusSeverity(selectedOrder.paymentStatus)"
                             class="mr-2">
                         </p-tag>
                     </div>
                 </div>
                 <p class="text-muted mt-2">
-                    Ngày đặt hàng: {{selectedOrder?.orderDate | date:'dd/MM/yyyy HH:mm'}}
+                    Ngày đặt hàng: {{selectedOrder.orderDate | date:'dd/MM/yyyy HH:mm'}}
                 </p>
+                
+                <!-- Order Status Timeline -->
+                <div class="order-timeline mt-3">
+                    <p class="status-description">
+                        <i [class]="getStatusIcon(selectedOrder.orderStatus)"></i>
+                        {{getOrderStatusDescription(selectedOrder.orderStatus)}}
+                    </p>
+                    
+                    <div class="order-progress mt-3">
+                        <div class="progress-track">
+                            <div *ngFor="let status of orderStatuses; let i = index" 
+                                 [class]="getProgressStepClass(status.value, selectedOrder.orderStatus)"
+                                 [attr.data-tooltip]="status.label">
+                                <i [class]="status.icon"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div class="row">
@@ -118,10 +137,10 @@
                             <h5>Thông tin giao hàng</h5>
                         </div>
                         <div class="info-card-body">
-                            <p><strong>Người nhận:</strong> {{selectedOrder?.firstname}} {{selectedOrder?.lastname}}</p>
-                            <p><strong>Địa chỉ:</strong> {{selectedOrder?.address}}, {{selectedOrder?.town}}, {{selectedOrder?.state}}, {{selectedOrder?.country}}</p>
-                            <p><strong>Điện thoại:</strong> {{selectedOrder?.phone}}</p>
-                            <p><strong>Email:</strong> {{selectedOrder?.email}}</p>
+                            <p><strong>Người nhận:</strong> {{selectedOrder.firstname}} {{selectedOrder.lastname}}</p>
+                            <p><strong>Địa chỉ:</strong> {{selectedOrder.address}}, {{selectedOrder.town}}, {{selectedOrder.state}}, {{selectedOrder.country}}</p>
+                            <p><strong>Điện thoại:</strong> {{selectedOrder.phone}}</p>
+                            <p><strong>Email:</strong> {{selectedOrder.email}}</p>
                         </div>
                     </div>
                 </div>
@@ -133,9 +152,9 @@
                             <h5>Thông tin thanh toán</h5>
                         </div>
                         <div class="info-card-body">
-                            <p><strong>Phương thức:</strong> {{getPaymentMethodLabel(selectedOrder?.paymentMethod)}}</p>
-                            <p><strong>Trạng thái:</strong> {{getPaymentStatusLabel(selectedOrder?.paymentStatus)}}</p>
-                            <p><strong>Tổng tiền:</strong> {{selectedOrder?.totalPrice | currency:'VND':'symbol':'1.0-0'}}</p>
+                            <p><strong>Phương thức:</strong> {{getPaymentMethodLabel(selectedOrder.paymentMethod)}}</p>
+                            <p><strong>Trạng thái:</strong> {{getPaymentStatusLabel(selectedOrder.paymentStatus)}}</p>
+                            <p><strong>Tổng tiền:</strong> {{selectedOrder.totalPrice | currency:'VND':'symbol':'1.0-0'}}</p>
                         </div>
                     </div>
                 </div>
@@ -144,7 +163,7 @@
             <!-- Chi tiết sản phẩm -->
             <div class="products-section mt-4">
                 <h5>Chi tiết sản phẩm</h5>
-                <p-table [value]="orderDetails" [tableStyle]="{'min-width': '50rem'}">
+                <p-table [value]="orderDetails" [scrollable]="true" scrollHeight="300px" [tableStyle]="{'min-width': '50rem'}">
                     <ng-template pTemplate="header">
                         <tr>
                             <th>Sản phẩm</th>
@@ -156,7 +175,7 @@
                     <ng-template pTemplate="body" let-detail>
                         <tr>
                             <td>
-                                <div class="product-info d-flex align-items-center">
+                                <div class="product-info">
                                     <img [src]="detail.product?.image" [alt]="detail.product?.name" 
                                          style="width: 50px; height: 50px; object-fit: cover; margin-right: 10px;">
                                     <span>{{detail.product?.name}}</span>
@@ -167,14 +186,33 @@
                             <td>{{detail.price * detail.quantity | currency:'VND':'symbol':'1.0-0'}}</td>
                         </tr>
                     </ng-template>
+                    <ng-template pTemplate="emptymessage">
+                        <tr>
+                            <td colspan="4" class="empty-details">
+                                <i class="pi pi-inbox"></i>
+                                <p>Không có chi tiết sản phẩm</p>
+                            </td>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="footer">
+                        <tr>
+                            <td colspan="3" class="text-right"><strong>Tổng cộng:</strong></td>
+                            <td><strong>{{selectedOrder?.totalPrice | currency:'VND':'symbol':'1.0-0'}}</strong></td>
+                        </tr>
+                    </ng-template>
                 </p-table>
             </div>
         </div>
     </ng-template>
 
     <ng-template pTemplate="footer">
-        <button pButton pRipple label="Đóng" icon="pi pi-times" 
-                class="p-button-text" (click)="displayOrderDetails=false"></button>
+        <div class="d-flex justify-content-between w-100">
+            <button pButton pRipple label="Xuất hóa đơn" icon="pi pi-file-pdf" 
+                   class="p-button-success export-invoice" (click)="exportInvoice()"
+                   [disabled]="loadingOrderDetails || !selectedOrder"></button>
+            <button pButton pRipple label="Đóng" icon="pi pi-times" 
+                    class="p-button-text" (click)="displayOrderDetails=false"></button>
+        </div>
     </ng-template>
 </p-dialog>
 

@@ -33,7 +33,8 @@ const routes: Routes = [
       {path:'order',component:OrderComponent},
       {path:'blog',component:BlogComponent},
       {path:'tag',component:TagComponent},
-      {path:'inventory',component:InventoryComponent}
+      {path:'inventory',component:InventoryComponent},
+      {path:'order/:id',component:OrderComponent}
     ]
   },
   {
