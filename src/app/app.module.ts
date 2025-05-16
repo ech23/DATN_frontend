@@ -54,6 +54,7 @@ import { PaymentResultComponent } from './components/client/payment-result/payme
 import { TagModule } from 'primeng/tag';
 import { MenuModule } from 'primeng/menu';
 import { TooltipModule } from 'primeng/tooltip';
+import { TimelineModule } from 'primeng/timeline';
 import { ConfirmationService, MessageService } from 'primeng/api';
 
 @NgModule({
@@ -112,7 +113,8 @@ import { ConfirmationService, MessageService } from 'primeng/api';
     MultiSelectModule,
     TagModule,
     MenuModule,
-    TooltipModule
+    TooltipModule,
+    TimelineModule
   ],
   providers: [VNPayService, MessageService, ConfirmationService],
   bootstrap: [AppComponent]

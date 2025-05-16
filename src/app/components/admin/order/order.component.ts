@@ -1,7 +1,17 @@
 import { Component, OnInit } from '@angular/core';
 import { MessageService, ConfirmationService } from 'primeng/api';
 import { OrderService } from 'src/app/_service/order.service';
-
+import { PdfService } from 'src/app/_service/pdf.service';
+interface OrderDetail {
+  id: number;
+  orderId: number;
+  name: string;
+  price: number;
+  productId: number;
+  quantity: number;
+  subtotal: number;
+  
+}
 @Component({
   selector: 'app-order',
   templateUrl: './order.component.html',
@@ -21,7 +31,8 @@ export class OrderComponent implements OnInit {
   constructor(
     private orderService: OrderService, 
     private messageService: MessageService,
-    private confirmationService: ConfirmationService
+    private confirmationService: ConfirmationService,
+    private pdfService: PdfService
   ) { }
 
   ngOnInit(): void {
@@ -46,30 +57,38 @@ export class OrderComponent implements OnInit {
   
   openOrderDetails(order: any) {
     this.loadingOrderDetails = true;
+    this.selectedOrder = order;
     this.displayOrderDetails = true;
     
-    // Tạm thời sử dụng order hiện tại để hiển thị thông tin cơ bản
-    this.selectedOrder = { ...order };
-    this.orderDetails = [];
-    
-    // Lấy thông tin chi tiết từ server
-    this.orderService.getOrderById(order.id).subscribe({
-      next: (orderDetail) => {
-        this.selectedOrder = orderDetail;
-        this.orderDetails = orderDetail.orderDetails || [];
-        this.loadingOrderDetails = false;
-      },
-      error: (err) => {
-        console.error('Lỗi khi lấy chi tiết đơn hàng:', err);
-        this.loadingOrderDetails = false;
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Lỗi',
-          detail: 'Không thể tải thông tin chi tiết đơn hàng. Vui lòng thử lại.'
-        });
+    this.orderService.getOrderDetailsById(order.id).subscribe({
+        next: (response) => {
+          console.log(response);
+            this.orderDetails = Array.isArray(response) ? response : Object.values(response);
+            this.loadingOrderDetails = false;
+            if (response.orderDetails && Array.isArray(response.orderDetails)) {
+              console.log(response.orderDetails);
+              this.orderDetails = response.orderDetails.map((detail: OrderDetail) => ({
+              id: detail.id,
+              orderId: detail.orderId,
+              productId: detail.productId,
+              name: detail.name,
+              price: Number(detail.price),
+              quantity: Number(detail.quantity)
+        })) as OrderDetail[];
+      } else {
+        this.orderDetails = [];
       }
+        },
+        error: (error) => {
+            this.messageService.add({
+                severity: 'error',
+                summary: 'Lỗi',
+                detail: 'Không thể tải chi tiết đơn hàng'
+            });
+            this.loadingOrderDetails = false;
+        }
     });
-  }
+}
   
   getStatusLabel(status: string): string {
     if (!status) return 'Chờ xác nhận';
@@ -196,5 +215,75 @@ export class OrderComponent implements OnInit {
   
   refreshOrders() {
     this.getListOrder();
+  }
+  
+  /**
+   * Generate and open invoice for selected order
+   */
+  generateInvoice() {
+    if (!this.selectedOrder || !this.orderDetails || this.orderDetails.length === 0) {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Lỗi',
+        detail: 'Không thể tạo hóa đơn. Không có thông tin đơn hàng hoặc sản phẩm.'
+      });
+      return;
+    }
+    
+    try {
+      // Show loading message
+      this.messageService.add({
+        severity: 'info',
+        summary: 'Thông báo',
+        detail: 'Đang tạo hóa đơn PDF, vui lòng đợi...'
+      });
+      
+      // Wait a moment for the UI to update before generating the PDF
+      setTimeout(() => {
+        this.pdfService.generateInvoice(this.selectedOrder, this.orderDetails);
+      }, 100);
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Lỗi',
+        detail: 'Có lỗi xảy ra khi tạo hóa đơn. Vui lòng thử lại sau.'
+      });
+    }
+  }
+  
+  /**
+   * Generate and download invoice for selected order
+   */
+  downloadInvoice() {
+    if (!this.selectedOrder || !this.orderDetails || this.orderDetails.length === 0) {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Lỗi',
+        detail: 'Không thể tải hóa đơn. Không có thông tin đơn hàng hoặc sản phẩm.'
+      });
+      return;
+    }
+    
+    try {
+      // Show loading message
+      this.messageService.add({
+        severity: 'info',
+        summary: 'Thông báo',
+        detail: 'Đang tạo hóa đơn PDF, vui lòng đợi...'
+      });
+      
+      // Wait a moment for the UI to update before generating the PDF
+      setTimeout(() => {
+        this.pdfService.downloadInvoice(this.selectedOrder, this.orderDetails);
+      }, 100);
+    } catch (error) {
+      console.error('Error downloading PDF:', error);
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Lỗi',
+        detail: 'Có lỗi xảy ra khi tạo hóa đơn. Vui lòng thử lại sau.'
+      });
+    }
   }
 }

@@ -72,7 +72,9 @@ export class OrderService {
   getOrderById(orderId: string): Observable<any> {
     return this.http.get(ORDER_API + orderId, httpOptions);
   }
-  
+  getOrderDetailsById(orderId: string): Observable<any> {
+    return this.http.get(ORDER_API + orderId + '/details', httpOptions);
+  }
   // Thêm các trạng thái đơn hàng có sẵn
   getOrderStatuses(): any[] {
     return [
