@@ -87,7 +87,7 @@
         <p class="mt-3">Đang tải thông tin chi tiết đơn hàng...</p>
     </div>
     
-    <ng-template pTemplate="content" *ngIf="selectedOrder && !loadingOrderDetails">
+    <ng-template pTemplate="content" *ngIf="!loadingOrderDetails">
         <div class="order-detail-wrapper">
             <!-- Order Status Section -->
             <div class="order-status-section mb-4">
@@ -144,9 +144,10 @@
             <!-- Chi tiết sản phẩm -->
             <div class="products-section mt-4">
                 <h5>Chi tiết sản phẩm</h5>
-                <p-table [value]="orderDetails" [tableStyle]="{'min-width': '50rem'}">
+                <p-table [value]="orderDetails" [tableStyle]="{'min-width': '50rem'}" styleClass="p-datatable-sm">
                     <ng-template pTemplate="header">
                         <tr>
+                            <th>Mã sản phẩm</th>
                             <th>Sản phẩm</th>
                             <th style="width: 100px">Số lượng</th>
                             <th style="width: 150px">Đơn giá</th>
@@ -155,19 +156,48 @@
                     </ng-template>
                     <ng-template pTemplate="body" let-detail>
                         <tr>
-                            <td>
-                                <div class="product-info d-flex align-items-center">
-                                    <img [src]="detail.product?.image" [alt]="detail.product?.name" 
-                                         style="width: 50px; height: 50px; object-fit: cover; margin-right: 10px;">
-                                    <span>{{detail.product?.name}}</span>
+                            <td>{{detail?.productId}}</td>
+                            <td>{{detail?.name}}</td>
+                            <td>{{detail?.quantity}}</td>
+                            <td>{{detail?.price | currency:'VND':'symbol':'1.0-0'}}</td>
+                            <td>{{detail?.price * detail?.quantity | currency:'VND':'symbol':'1.0-0'}}</td>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="footer">
+                        <tr>
+                            <td colspan="3" class="text-right"><strong>Tổng cộng:</strong></td>
+                            <td><strong>{{selectedOrder?.totalPrice | currency:'VND':'symbol':'1.0-0'}}</strong></td>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="emptymessage">
+                        <tr>
+                            <td colspan="4" class="text-center">
+                                <div class="p-4">
+                                    <i class="pi pi-inbox" style="font-size: 2rem; opacity: 0.3;"></i>
+                                    <p class="mt-3">Không có sản phẩm nào trong đơn hàng</p>
                                 </div>
                             </td>
-                            <td>{{detail.quantity}}</td>
-                            <td>{{detail.price | currency:'VND':'symbol':'1.0-0'}}</td>
-                            <td>{{detail.price * detail.quantity | currency:'VND':'symbol':'1.0-0'}}</td>
                         </tr>
                     </ng-template>
                 </p-table>
+            </div>
+
+            <!-- Trạng thái đơn hàng -->
+            <div class="order-timeline mt-4">
+                <h5>Theo dõi đơn hàng</h5>
+                <p-timeline [value]="getOrderStatusTimeline(selectedOrder?.orderStatus)">
+                    <ng-template pTemplate="content" let-status>
+                        <div [class.active-status]="status.active">
+                            <h6 class="mb-1">{{status.label}}</h6>
+                            <p class="text-muted m-0">{{status.description}}</p>
+                        </div>
+                    </ng-template>
+                    <ng-template pTemplate="opposite" let-status>
+                        <div class="order-status-icon" [class.active-status]="status.active">
+                            <i [class]="status.icon"></i>
+                        </div>
+                    </ng-template>
+                </p-timeline>
             </div>
         </div>
     </ng-template>

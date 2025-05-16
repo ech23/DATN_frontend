@@ -31,7 +31,7 @@
                     </div>
                     <div class="sidebar__item">
                         <h4>Price</h4>
-                        <p-slider [(ngModel)]="rangeValues" [range]="true" [min]="0" [max]="500" [style]="{'background':'#dd2222'}" (onChange)="getListProductByPriceRange()" ></p-slider>
+                        <p-slider [(ngModel)]="rangeValues" [range]="true" [min]="0" [max]="500000" [style]="{'background':'#dd2222'}" (onChange)="getListProductByPriceRange()" ></p-slider>
                         <div class="price-input mt-3">
                             {{rangeValues[0] | currency:'VND'}} - {{rangeValues[1] | currency:'VND'}} 
                         </div>

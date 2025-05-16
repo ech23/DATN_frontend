@@ -124,7 +124,7 @@
     <p-table *ngIf="!loadingStockHistory" [value]="stockHistory" [tableStyle]="{'min-width': '50rem'}">
         <ng-template pTemplate="header">
             <tr>
-                <th>Ngày</th>
+                
                 <th>Loại điều chỉnh</th>
                 <th>Số lượng</th>
                 <th>Tồn kho mới</th>
@@ -133,7 +133,7 @@
         </ng-template>
         <ng-template pTemplate="body" let-history>
             <tr>
-                <td>{{history.date | date:'dd/MM/yyyy HH:mm'}}</td>
+                
                 <td>
                     <p-tag [value]="history.adjustmentType === 'ADD' ? 'Thêm vào' : 'Trừ đi'"
                           [severity]="history.adjustmentType === 'ADD' ? 'success' : 'danger'"></p-tag>
