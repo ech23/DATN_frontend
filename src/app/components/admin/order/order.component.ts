@@ -124,8 +124,15 @@ export class OrderComponent implements OnInit {
               if (this.selectedOrder && this.selectedOrder.id === order.id) {
                 this.selectedOrder.orderStatus = newStatus;
               }
-            }
             
+            // Xử lý tự động cập nhật trạng thái thanh toán nếu cần
+            if(order.paymentMethod === 'COD'){
+              if(newStatus === 'DELIVERED' && order.paymentStatus !== 'PAID') {
+                order.paymentStatus = 'PAID'; // Tự động đánh dấu là đã thanh toán
+                this.updatePaymentStatus(order, 'PAID');
+              }
+            }
+          }
             this.loading = false;
             this.messageService.add({
               severity: 'success', 
@@ -188,6 +195,12 @@ export class OrderComponent implements OnInit {
         if (status === 'PAID' && order.orderStatus === 'PENDING') {
           this.updateOrderStatus(order, 'PREPARING');
         }
+        else if(status === 'CANCELLED'){
+          if(order.orderStatus !== 'CANCELLED') {
+            this.updateOrderStatus(order, 'CANCELLED');
+          }
+        }
+      
       },
       error: (err) => {
         // Khôi phục trạng thái thanh toán cũ nếu cập nhật thất bại

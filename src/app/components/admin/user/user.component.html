@@ -21,8 +21,9 @@
                     <th pSortableColumn="email">Email <p-sortIcon field="email"></p-sortIcon></th>
                     <th pSortableColumn="firstname">First Name <p-sortIcon field="firstname"></p-sortIcon></th>
                     <th pSortableColumn="lastname">Last Name <p-sortIcon field="lastname"></p-sortIcon></th>
-                    <th pSortableColumn="roles">Roles <p-sortIcon field="roles"></p-sortIcon></th>
-                    <th pSortableColumn="enabled">Status <p-sortIcon field="enabled"></p-sortIcon></th>
+                    <th pSortableColumn="phone">Phone <p-sortIcon field="phone"></p-sortIcon></th>
+                    <th>Address</th>
+                    <th>Roles</th>
                     <th>Actions</th>
                 </tr>
             </ng-template>
@@ -33,26 +34,25 @@
                     <td>{{user.email}}</td>
                     <td>{{user.firstname}}</td>
                     <td>{{user.lastname}}</td>
+                    <td>{{user.phone}}</td>
+                    <td>{{user.state}}, {{user.address}}, {{user.country}}</td>
                     <td>
-                        <p-chip *ngFor="let role of user.roles" [label]="role" [removable]="false"></p-chip>
+                        <span *ngFor="let role of user.roles; let last = last">
+                            {{role}}<span *ngIf="!last">, </span>
+                        </span>
                     </td>
                     <td>
-                        <p-button *ngIf="user.enabled" icon="pi pi-check" class="p-button-success p-button-sm" 
-                                (click)="toggleUserStatus(user)" pTooltip="Disable User"></p-button>
-                        <p-button *ngIf="!user.enabled" icon="pi pi-times" class="p-button-danger p-button-sm" 
-                                (click)="toggleUserStatus(user)" pTooltip="Enable User"></p-button>
-                    </td>
-                    <td>
-                        <button pButton icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2" 
+                        <button pButton icon="pi pi-pencil" class="p-button-rounded p-button-info mr-2" 
                                 (click)="editUser(user)" pTooltip="Edit User"></button>
-                        <button pButton icon="pi pi-trash" class="p-button-rounded p-button-danger" 
+                        <button pButton icon="pi pi-trash" class="p-button-rounded p-button-danger mr-2" 
                                 (click)="deleteUser(user)" pTooltip="Delete User"></button>
+                        <!-- Removed toggle status button since backend doesn't support enabled field -->
                     </td>
                 </tr>
             </ng-template>
             <ng-template pTemplate="emptymessage">
                 <tr>
-                    <td colspan="8" class="text-center">No users found.</td>
+                    <td colspan="9" class="text-center">No users found.</td>
                 </tr>
             </ng-template>
         </p-table>
@@ -60,68 +60,94 @@
 </div>
 
 <!-- User Dialog -->
-<p-dialog [(visible)]="userDialog" [style]="{width: '450px'}" [modal]="true" 
+<p-dialog [(visible)]="userDialog" [style]="{width: '500px'}" [modal]="true" 
         [draggable]="false" [resizable]="false" 
         [header]="user.id ? 'Edit User' : 'Create User'">
     <ng-template pTemplate="content">
-        <div class="p-fluid">
+        <form [formGroup]="userForm" class="p-fluid">
             <div class="field mb-3">
                 <label for="username" class="font-bold">Username*</label>
-                <input id="username" type="text" pInputText [(ngModel)]="user.username" 
-                        [ngClass]="{'ng-invalid ng-dirty': submitted && !user.username}" required autofocus>
-                <small class="p-error" *ngIf="submitted && !user.username">Username is required.</small>
+                <input id="username" type="text" pInputText formControlName="username" 
+                       [ngClass]="{'ng-invalid ng-dirty': userForm.get('username')?.invalid && userForm.get('username')?.touched}" 
+                       autofocus>
+                <small class="p-error" *ngIf="userForm.get('username')?.invalid && userForm.get('username')?.touched">
+                    <span *ngIf="userForm.get('username')?.errors?.['required']">Username is required.</span>
+                    <span *ngIf="userForm.get('username')?.errors?.['minlength']">Username must be at least 3 characters.</span>
+                </small>
             </div>
+            
             <div class="field mb-3">
                 <label for="email" class="font-bold">Email*</label>
-                <input id="email" type="email" pInputText [(ngModel)]="user.email" 
-                        [ngClass]="{'ng-invalid ng-dirty': submitted && !user.email}" required>
-                <small class="p-error" *ngIf="submitted && !user.email">Email is required.</small>
+                <input id="email" type="email" pInputText formControlName="email" 
+                       [ngClass]="{'ng-invalid ng-dirty': userForm.get('email')?.invalid && userForm.get('email')?.touched}">
+                <small class="p-error" *ngIf="userForm.get('email')?.invalid && userForm.get('email')?.touched">
+                    <span *ngIf="userForm.get('email')?.errors?.['required']">Email is required.</span>
+                    <span *ngIf="userForm.get('email')?.errors?.['email']">Email format is invalid.</span>
+                </small>
             </div>
+            
+            <div class="field mb-3" *ngIf="!user.id">
+                <label for="password" class="font-bold">Password*</label>
+                <input id="password" type="password" pInputText formControlName="password" 
+                       [ngClass]="{'ng-invalid ng-dirty': userForm.get('password')?.invalid && userForm.get('password')?.touched}">
+                <small class="p-error" *ngIf="userForm.get('password')?.invalid && userForm.get('password')?.touched">
+                    <span *ngIf="userForm.get('password')?.errors?.['required']">Password is required.</span>
+                    <span *ngIf="userForm.get('password')?.errors?.['minlength']">Password must be at least 6 characters.</span>
+                </small>
+            </div>
+            
             <div class="field mb-3">
                 <label for="firstname" class="font-bold">First Name</label>
-                <input id="firstname" type="text" pInputText [(ngModel)]="user.firstname">
+                <input id="firstname" type="text" pInputText formControlName="firstname">
             </div>
+            
             <div class="field mb-3">
                 <label for="lastname" class="font-bold">Last Name</label>
-                <input id="lastname" type="text" pInputText [(ngModel)]="user.lastname">
+                <input id="lastname" type="text" pInputText formControlName="lastname">
             </div>
-            <div class="field mb-3">
-                <label for="country" class="font-bold">Country</label>
-                <input id="country" type="text" pInputText [(ngModel)]="user.country">
-            </div>
-            <div class="field mb-3">
-                <label for="state" class="font-bold">State</label>
-                <input id="state" type="text" pInputText [(ngModel)]="user.state">
-            </div>
-            <div class="field mb-3">
-                <label for="address" class="font-bold">Address</label>
-                <input id="address" type="text" pInputText [(ngModel)]="user.address">
-            </div>
+            
             <div class="field mb-3">
                 <label for="phone" class="font-bold">Phone</label>
-                <input id="phone" type="text" pInputText [(ngModel)]="user.phone">
+                <input id="phone" type="text" pInputText formControlName="phone">
             </div>
+            
             <div class="field mb-3">
-                <label for="roles" class="font-bold">Roles</label>
-                <p-multiSelect id="roles" [options]="availableRoles" [(ngModel)]="user.roles" 
-                            [defaultLabel]="'Select Roles'" [selectedItemsLabel]="'{0} roles selected'">
+                <label for="country" class="font-bold">Country</label>
+                <input id="country" type="text" pInputText formControlName="country">
+            </div>
+            
+            <div class="field mb-3">
+                <label for="state" class="font-bold">State</label>
+                <input id="state" type="text" pInputText formControlName="state">
+            </div>
+            
+            <div class="field mb-3">
+                <label for="address" class="font-bold">Address</label>
+                <input id="address" type="text" pInputText formControlName="address">
+            </div>
+            
+            <div class="field mb-3">
+                <label for="roles" class="font-bold">Roles*</label>
+                <p-multiSelect id="roles" [options]="availableRoles" formControlName="roles" 
+                              [defaultLabel]="'Select Roles'" [selectedItemsLabel]="'{0} roles selected'"
+                              [ngClass]="{'ng-invalid ng-dirty': userForm.get('roles')?.invalid && userForm.get('roles')?.touched}">
                 </p-multiSelect>
+                <small class="p-error" *ngIf="userForm.get('roles')?.invalid && userForm.get('roles')?.touched">
+                    At least one role is required.
+                </small>
             </div>
-            <div class="field-checkbox mb-3">
-                <p-checkbox [(ngModel)]="user.enabled" [binary]="true" inputId="enabled"></p-checkbox>
-                <label for="enabled" class="ml-2">Enabled</label>
-            </div>
-        </div>
+        </form>
     </ng-template>
     <ng-template pTemplate="footer">
         <button pButton icon="pi pi-times" class="p-button-text" (click)="hideDialog()" label="Cancel"></button>
-        <button pButton icon="pi pi-check" class="p-button-text" (click)="saveUser()" label="Save"></button>
+        <button pButton icon="pi pi-check" class="p-button-text" 
+                (click)="saveUser()" [disabled]="userForm.invalid" label="Save"></button>
     </ng-template>
 </p-dialog>
 
 <!-- Delete Confirmation Dialog -->
 <p-dialog [(visible)]="deleteUserDialog" [style]="{width: '450px'}" [modal]="true" 
-        [draggable]="false" [resizable]="false" header="Confirm" [style]="{width: '450px'}">
+        [draggable]="false" [resizable]="false" header="Confirm">
     <ng-template pTemplate="content">
         <div class="confirmation-content">
             <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem"></i>
@@ -132,4 +158,4 @@
         <button pButton icon="pi pi-times" class="p-button-text" (click)="deleteUserDialog = false" label="No"></button>
         <button pButton icon="pi pi-check" class="p-button-text p-button-danger" (click)="confirmDelete()" label="Yes"></button>
     </ng-template>
-</p-dialog> 
+</p-dialog>

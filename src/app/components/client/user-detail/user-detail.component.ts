@@ -57,14 +57,31 @@ export class UserDetailComponent implements OnInit {
   }
 
   updateProfile(){
+    this.messageService.add({
+    severity: 'info',
+    summary: 'Xác nhận',
+    detail: 'Đang cập nhật thông tin...',
+    life: 1000
+  });
     const{firstname,lastname,email,country,state,address,phone} = this.updateForm;
     this.userService.updateProfile(this.username,firstname,lastname,email,country,state,address,phone).subscribe({
       
-      next: _res =>{
-        this.showSuccess("Update user succesfull!");
+      next: res =>{
         this.getUser();
+        this.messageService.add({
+        severity: 'success',
+        summary: 'Thành công',
+        detail: 'Đã cập nhật thông tin thành công',
+        life: 3000 // Hiển thị trong 3 giây
+  });
       },error: err=>{
         console.log(err);
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Lỗi',
+          detail: 'Cập nhật thông tin thất bại',
+          life: 3000 // Hiển thị trong 3 giây
+        });
       }
     })
   }
@@ -74,8 +91,21 @@ export class UserDetailComponent implements OnInit {
     this.userService.changePassword(this.username,oldPassword,newPassword).subscribe({
       next: _res =>{
         this.getUser();
+        console.log(_res);
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Thành công',
+          detail: 'Đã thay đổi mật khẩu thành công',
+          life: 3000 // Hiển thị trong 3 giây
+        });
       },error: err =>{
         console.log(err);
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Lỗi',
+          detail: 'Thay đổi mật khẩu thất bại',
+          life: 3000 // Hiển thị trong 3 giây
+        });
       }
     }) 
   }
@@ -84,7 +114,9 @@ export class UserDetailComponent implements OnInit {
   showChangePassword(){
     this.changePassword =true;
   }
-  showSuccess(text: string) {
-    this.messageService.add({severity:'success', summary: 'Success', detail: text});
-  }
+  
 }
+
+
+
+

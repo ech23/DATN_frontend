@@ -56,7 +56,8 @@ import { MenuModule } from 'primeng/menu';
 import { TooltipModule } from 'primeng/tooltip';
 import { TimelineModule } from 'primeng/timeline';
 import { ConfirmationService, MessageService } from 'primeng/api';
-
+import { UserComponent } from './components/admin/user/user.component';
+import { ReactiveFormsModule } from '@angular/forms';
 @NgModule({
   declarations: [
     AppComponent,
@@ -81,7 +82,8 @@ import { ConfirmationService, MessageService } from 'primeng/api';
     SearchComponent,
     LoginPageComponent,
     ChatbotComponent,
-    PaymentResultComponent
+    PaymentResultComponent,
+    UserComponent
   ],
   imports: [
     BrowserModule,
@@ -114,7 +116,9 @@ import { ConfirmationService, MessageService } from 'primeng/api';
     TagModule,
     MenuModule,
     TooltipModule,
-    TimelineModule
+    TimelineModule,
+    ReactiveFormsModule,  // Cho Reactive Forms
+    FormsModule,  
   ],
   providers: [VNPayService, MessageService, ConfirmationService],
   bootstrap: [AppComponent]

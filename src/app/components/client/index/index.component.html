@@ -1,39 +1,88 @@
 
 <p-toast></p-toast>
 
-<p-dialog [(visible)]="authModal" [style]="{width: '30vw'}"  [baseZIndex]="10000" [modal]="true" [dismissableMask]="true">
+<p-dialog [(visible)]="authModal" [style]="{width: '400px'}" [baseZIndex]="10000" [modal]="true" [dismissableMask]="true">
     <p-tabView>
+        <!-- Form Đăng nhập -->
         <p-tabPanel header="Đăng nhập">
-            <div class="p-field">
-                <label for="username">Tên đăng nhập: </label>
-                <input type="text" pInputText class="w-full" [(ngModel)]="loginForm.username" name="username">
-              </div>
-              <div class="p-field">
-                <label for="password">Mật khẩu: </label>
-                <input type="password" pPassword class="w-full" [(ngModel)]="loginForm.password" name="password">
-              </div>
-              <div class="p-field mt-3">
-                <button type="submit" pButton (click)="login()">Đăng nhập</button>
-              </div>
+            <form [formGroup]="loginFormGroup" (ngSubmit)="login()" class="auth-form">
+                <div class="form-group">
+                    <span class="p-input-icon-left w-full">
+                        <i class="pi pi-user"></i>
+                        <input type="text" pInputText class="w-full" formControlName="username" 
+                               placeholder="Tên đăng nhập">
+                    </span>
+                    <small class="text-danger block mt-1" 
+                           *ngIf="loginFormGroup.get('username')?.invalid && loginFormGroup.get('username')?.touched">
+                        {{getErrorMessage(loginFormGroup, 'username')}}
+                    </small>
+                </div>
+                
+                <div class="form-group mt-3">
+                    <span class="p-input-icon-left w-full">
+                        <i class="pi pi-lock"></i>
+                        <input type="password" pInputText class="w-full" formControlName="password" 
+                               placeholder="Mật khẩu">
+                    </span>
+                    <small class="text-danger block mt-1" 
+                           *ngIf="loginFormGroup.get('password')?.invalid && loginFormGroup.get('password')?.touched">
+                        {{getErrorMessage(loginFormGroup, 'password')}}
+                    </small>
+                </div>
+
+                <div class="form-group mt-4">
+                    <button pButton type="submit" label="Đăng nhập" 
+                            [disabled]="loginFormGroup.invalid"
+                            class="p-button-rounded w-full"></button>
+                </div>
+            </form>
         </p-tabPanel>
+
+        <!-- Form Đăng ký -->
         <p-tabPanel header="Đăng ký">
-            <form action="">
-                <div class="p-field">
-                    <label for="username">Tên đăng nhập: </label>
-                    <input type="text" pInputText class="w-full" [(ngModel)]="registerForm.username" name="username">
+            <form [formGroup]="registerFormGroup" (ngSubmit)="register()" class="auth-form">
+                <div class="form-group">
+                    <span class="p-input-icon-left w-full">
+                        <i class="pi pi-user"></i>
+                        <input type="text" pInputText class="w-full" formControlName="username" 
+                               placeholder="Tên đăng nhập">
+                    </span>
+                    <small class="text-danger block mt-1" 
+                           *ngIf="registerFormGroup.get('username')?.invalid && registerFormGroup.get('username')?.touched">
+                        {{getErrorMessage(registerFormGroup, 'username')}}
+                    </small>
                 </div>
-                <div class="p-field">
-                    <label for="email">Email: </label>
-                    <input type="email" pInputText class="w-full" [(ngModel)]="registerForm.email" name="email">
+
+                <div class="form-group mt-3">
+                    <span class="p-input-icon-left w-full">
+                        <i class="pi pi-envelope"></i>
+                        <input type="email" pInputText class="w-full" formControlName="email" 
+                               placeholder="Email">
+                    </span>
+                    <small class="text-danger block mt-1" 
+                           *ngIf="registerFormGroup.get('email')?.invalid && registerFormGroup.get('email')?.touched">
+                        {{getErrorMessage(registerFormGroup, 'email')}}
+                    </small>
                 </div>
-                <div class="p-field">
-                    <label for="password">Mật khẩu: </label>
-                    <input type="password" pPassword  class="w-full" [(ngModel)]="registerForm.password" name="password">
+
+                <div class="form-group mt-3">
+                    <span class="p-input-icon-left w-full">
+                        <i class="pi pi-lock"></i>
+                        <input type="password" pInputText class="w-full" formControlName="password" 
+                               placeholder="Mật khẩu">
+                    </span>
+                    <small class="text-danger block mt-1" 
+                           *ngIf="registerFormGroup.get('password')?.invalid && registerFormGroup.get('password')?.touched">
+                        {{getErrorMessage(registerFormGroup, 'password')}}
+                    </small>
                 </div>
-                <div class="p-field mt-3">
-                    <button type="submit" pButton (click)="register()">Đăng ký</button>
+
+                <div class="form-group mt-4">
+                    <button pButton type="submit" label="Đăng ký" 
+                            [disabled]="registerFormGroup.invalid"
+                            class="p-button-rounded w-full"></button>
                 </div>
-              </form>
+            </form>
         </p-tabPanel>
     </p-tabView>
 </p-dialog>

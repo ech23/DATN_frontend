@@ -20,12 +20,12 @@ export class SearchComponent implements OnInit {
   heart = faHeart;
   bag = faShoppingBag;
   retweet = faRetweet;
-
+  id: number = 0;
   keyword: any;
   listProduct:any;
   listProductNewest:any;
   listCategory :any;
-  rangeValues = [0,100];
+  rangeValues = [0,10000];
 
   constructor(
     private router: Router,
@@ -76,6 +76,16 @@ export class SearchComponent implements OnInit {
     })
   }
 
+  getListProductByPriceRange(){
+    this.productService.getListByPriceRange(this.id,this.rangeValues[0],this.rangeValues[1]).subscribe({
+      next: res =>{
+        this.listProduct = res;
+        console.log(this.listProduct);
+      },error: err =>{
+        console.log(err);
+      }
+    })
+  }
 
   addToCart(item: any){
     this.cartService.getItems();

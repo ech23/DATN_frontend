@@ -1,3 +1,50 @@
+.auth-form {
+    padding: 1rem;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+:host ::ng-deep .p-dialog {
+    border-radius: 8px;
+}
+
+:host ::ng-deep .p-dialog .p-dialog-content {
+    padding: 0;
+    border-radius: 8px;
+}
+
+:host ::ng-deep .p-tabview .p-tabview-panels {
+    padding: 1rem;
+}
+
+:host ::ng-deep .p-input-icon-left > i {
+    color: #6c757d;
+}
+
+:host ::ng-deep .p-inputtext {
+    padding-left: 2.5rem;
+}
+
+.text-danger {
+    color: #dc3545;
+    font-size: 0.875rem;
+}
+
+:host ::ng-deep .p-button {
+    background: #7fad39;
+    border-color: #7fad39;
+}
+
+:host ::ng-deep .p-button:enabled:hover {
+    background: #689030;
+    border-color: #689030;
+}
+
+:host ::ng-deep .p-button:disabled {
+    opacity: 0.7;
+}
 .cart-box{
     display: flex;
     align-items: center;

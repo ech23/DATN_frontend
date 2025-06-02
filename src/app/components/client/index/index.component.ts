@@ -1,4 +1,5 @@
 import { Component, OnInit, ChangeDetectorRef, AfterContentChecked } from '@angular/core';
+import { Form, FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import {faBars, faHeart, faRightFromBracket, faUser} from '@fortawesome/free-solid-svg-icons'
 import {faShoppingBag} from '@fortawesome/free-solid-svg-icons'
@@ -32,7 +33,6 @@ export class IndexComponent implements OnInit {
   showDepartment = false;
 
 
-
   loginForm : any = {
     username : null,
     password : null
@@ -55,7 +55,8 @@ export class IndexComponent implements OnInit {
 
 
   keyword: any;
-
+  loginFormGroup: FormGroup = new FormGroup({});
+  registerFormGroup: FormGroup = new FormGroup({});
   constructor(
     public cartService:CartService,
     public wishlistService: WishlistService,
@@ -63,10 +64,27 @@ export class IndexComponent implements OnInit {
     private storageService: StorageService,
     private messageService:MessageService,
     private categoryService: CategoryService,
-    private router: Router){
-
+    private router: Router,
+    private fb:FormBuilder
+  ){
+    this.initializeForms();
   }
+  private initializeForms() {
+    this.loginFormGroup = this.fb.group({
+      username: ['', [Validators.required, Validators.minLength(3)]],
+      password: ['', [Validators.required, Validators.minLength(6)]]
+    });
 
+    this.registerFormGroup = this.fb.group({
+      username: ['', [Validators.required, Validators.minLength(3)]],
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', [
+        Validators.required,
+        Validators.minLength(6),
+        Validators.pattern(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/)
+      ]]
+    });
+  }
   ngOnInit(): void {
     this.getCategoryEnbled();
     this.isLoggedIn = this.storageService.isLoggedIn();
@@ -105,8 +123,11 @@ export class IndexComponent implements OnInit {
   }
 
   login():void{
-    const {username,password} = this.loginForm;
-    console.log(this.loginForm);
+    if (this.loginFormGroup.invalid) {
+      this.showError('Vui lòng điền đầy đủ thông tin đăng nhập hợp lệ!');
+      return;
+    }
+    const { username, password } = this.loginFormGroup.value;
     this.authService.login(username,password).subscribe({
       next: res =>{
         this.storageService.saveUser(res);
@@ -126,8 +147,11 @@ export class IndexComponent implements OnInit {
   }
 
   register():void{
-    const {username,email,password} = this.registerForm;
-    console.log(this.registerForm);
+    if (this.registerFormGroup.invalid) {
+      this.showError('Vui lòng điền đầy đủ thông tin đăng ký hợp lệ!');
+      return;
+    }
+    const { username, email, password } = this.registerFormGroup.value;
     this.authService.register(username,email,password).subscribe({
       next: res =>{
         this.isSuccessful = true;
@@ -141,7 +165,25 @@ export class IndexComponent implements OnInit {
       }
     })
   }
-
+  // Thêm các helper methods để kiểm tra lỗi
+  getErrorMessage(formGroup: FormGroup, controlName: string): string {
+    const control = formGroup.get(controlName);
+    if (control?.errors) {
+      if (control.errors['required']) {
+        return `${controlName} là bắt buộc`;
+      }
+      if (control.errors['minlength']) {
+        return `${controlName} phải có ít nhất ${control.errors['minlength'].requiredLength} ký tự`;
+      }
+      if (control.errors['email']) {
+        return 'Email không hợp lệ';
+      }
+      if (control.errors['pattern']) {
+        return 'Mật khẩu phải chứa ít nhất 1 chữ cái và 1 số';
+      }
+    }
+    return '';
+  }
   logout():void{
     this.authService.logout().subscribe({
       next:res =>{

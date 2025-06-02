@@ -26,7 +26,7 @@ export class ShopComponent implements OnInit {
   listCategory : any;
   listProductNewest : any[] = [];
 
-  rangeValues = [0,100];
+  rangeValues = [0,10000];
 
   constructor(
     private categoryService:CategoryService,

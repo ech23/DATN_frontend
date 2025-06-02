@@ -55,7 +55,7 @@ export class UserService {
   }
 
   toggleUserStatus(id: number, enabled: boolean): Observable<any> {
-    return this.http.put(USER_API + 'toggle-status/' + id, { enabled }, httpOptions);
+    return this.http.put(USER_API  + id + '/status', { enabled }, httpOptions);
   }
 
   updateUserRoles(id: number, roles: string[]): Observable<any> {

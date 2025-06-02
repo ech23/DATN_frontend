@@ -128,8 +128,8 @@ export class PdfService {
             {
               stack: [
                 { text: 'OGANI SHOP', style: 'companyName' },
-                { text: 'Địa chỉ: 286 Trần Phú, P.7, Q.5, TP.HCM' },
-                { text: 'Điện thoại: 0352901842352901842' },
+                { text: 'Địa chỉ: Số 298 Đ. Cầu Diễn, Minh Khai, Bắc Từ Liêm, Hà Nội' },
+                { text: 'Điện thoại: 0352901842' },
                 { text: 'Email: ogani@gmail.com' }
               ],
               width: '*'
@@ -157,7 +157,7 @@ export class PdfService {
                 { text: `Họ tên: ${order.firstname} ${order.lastname}` },
                 { text: `Điện thoại: ${order.phone}` },
                 { text: `Email: ${order.email}` },
-                { text: `Địa chỉ: ${order.address}, ${order.town}, ${order.state}, ${order.country}` }
+                { text: `Địa chỉ: ${order.state}, ${order.town}, ${order.address}, ${order.country}` }
               ],
               width: '*'
             },
