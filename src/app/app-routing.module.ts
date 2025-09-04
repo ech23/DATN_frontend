@@ -15,6 +15,8 @@ import { CheckoutComponent } from './components/client/checkout/checkout.compone
 import { HomeComponent } from './components/client/home/home.component';
 import { IndexComponent } from './components/client/index/index.component';
 import { LoginPageComponent } from './components/client/login-page/login-page.component';
+import { VerifyOtpComponent } from './components/client/verify-otp/verify-otp.component';
+
 import { MyOrderComponent } from './components/client/my-order/my-order.component';
 import { PaymentResultComponent } from './components/client/payment-result/payment-result.component';
 import { ProductDetailComponent } from './components/client/product-detail/product-detail.component';
@@ -54,7 +56,10 @@ const routes: Routes = [
       {path:'search/:keyword',component:SearchComponent}
     ]
   },
-  {path:'login',component:LoginPageComponent}
+  {path:'login',component:LoginPageComponent},
+  {path:'verify-otp',component:VerifyOtpComponent}
+  
+  
 ];
 
 @NgModule({

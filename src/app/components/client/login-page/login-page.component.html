@@ -6,6 +6,7 @@
 			<input type="email" placeholder="Email" [(ngModel)]="registerForm.email" name="email" />
 			<input type="password" placeholder="Password" [(ngModel)]="registerForm.password" name="password" />
 			<button (click)="register()">Sign Up</button>
+			<a routerLink="/">Trang chủ</a>
 		</form>
 	</div>
 	<div class="form-container sign-in-container">
@@ -15,6 +16,7 @@
 			<input type="password" placeholder="Password" [(ngModel)]="loginForm.password" name="password" />
 			<a href="javascript:void(0)">Forgot your password?</a>
 			<button (click)="login()">Sign In</button>
+			<a routerLink="/register">Chưa có tài khoản? Đăng ký</a>
 		</form>
 	</div>
 	<div class="overlay-container">

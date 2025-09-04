@@ -20,7 +20,8 @@ import {ButtonModule} from 'primeng/button';
 import {TableModule} from 'primeng/table';
 import {InputNumberModule} from 'primeng/inputnumber';
 import { FormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { HttpRequestInterceptor } from './_helpers/http.interceptor';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {ToolbarModule} from 'primeng/toolbar';
 import {FileUploadModule} from 'primeng/fileupload';
@@ -49,6 +50,8 @@ import { MyOrderComponent } from './components/client/my-order/my-order.componen
 import { SearchComponent } from './components/client/search/search.component';
 import { LoginPageComponent } from './components/client/login-page/login-page.component';
 import { ChatbotComponent } from './components/client/chatbot/chatbot.component';
+import { VerifyOtpComponent } from './components/client/verify-otp/verify-otp.component';
+
 import { VNPayService } from './_service/vnpay.service';
 import { PaymentResultComponent } from './components/client/payment-result/payment-result.component';
 import { TagModule } from 'primeng/tag';
@@ -82,8 +85,10 @@ import { ReactiveFormsModule } from '@angular/forms';
     SearchComponent,
     LoginPageComponent,
     ChatbotComponent,
+    VerifyOtpComponent,
     PaymentResultComponent,
     UserComponent
+    
   ],
   imports: [
     BrowserModule,
@@ -120,7 +125,12 @@ import { ReactiveFormsModule } from '@angular/forms';
     ReactiveFormsModule,  // Cho Reactive Forms
     FormsModule,  
   ],
-  providers: [VNPayService, MessageService, ConfirmationService],
+  providers: [
+    VNPayService,
+    MessageService,
+    ConfirmationService,
+    { provide: HTTP_INTERCEPTORS, useClass: HttpRequestInterceptor, multi: true }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

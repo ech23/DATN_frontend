@@ -55,7 +55,7 @@ export class OrderService {
       transactionInfo: transactionInfo || {} // Include transaction details if available
     };
     
-    return this.http.post(`${ORDER_API}${orderId}/update-payment`, requestBody, httpOptions)
+    return this.http.post(ORDER_API + orderId + '/update-payment', requestBody, httpOptions)
       .pipe(
         catchError(error => {
           console.error('Error updating payment status:', error);
@@ -66,7 +66,20 @@ export class OrderService {
   
   updateOrderStatus(orderId: string, orderStatus: string): Observable<any> {
     const params = new HttpParams().set('status', orderStatus);
-    return this.http.post(ORDER_API + orderId + '/update-status',null, {params: params});
+    return this.http.post(ORDER_API + orderId + '/update-status',null, {params: params})
+    .pipe(
+      catchError(error => {
+        console.error('Error updating order status:', error);
+        let errorMessage = 'Failed to update order status';
+        if (error.error && error.error.message) {
+          errorMessage = error.error.message;
+        }else if(error.status === 505){
+          errorMessage = 'Trạng thái đơn hàng không hợp lệ';
+        }
+        return throwError(() => new Error(error.message || 'Failed to update order status'));
+      })
+    )
+    ;
   }
   
   getOrderById(orderId: string): Observable<any> {

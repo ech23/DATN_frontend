@@ -18,12 +18,12 @@
                 <tr>
                     <th pSortableColumn="id">ID <p-sortIcon field="id"></p-sortIcon></th>
                     <th pSortableColumn="username">Username <p-sortIcon field="username"></p-sortIcon></th>
-                    <th pSortableColumn="email">Email <p-sortIcon field="email"></p-sortIcon></th>
+                    <th pSortableColumn="email" >Email <p-sortIcon field="email"></p-sortIcon></th>
                     <th pSortableColumn="firstname">First Name <p-sortIcon field="firstname"></p-sortIcon></th>
                     <th pSortableColumn="lastname">Last Name <p-sortIcon field="lastname"></p-sortIcon></th>
                     <th pSortableColumn="phone">Phone <p-sortIcon field="phone"></p-sortIcon></th>
                     <th>Address</th>
-                    <th>Roles</th>
+                    <!-- <th>Roles</th> -->
                     <th>Actions</th>
                 </tr>
             </ng-template>
@@ -36,11 +36,11 @@
                     <td>{{user.lastname}}</td>
                     <td>{{user.phone}}</td>
                     <td>{{user.state}}, {{user.address}}, {{user.country}}</td>
-                    <td>
+                    <!-- <td>
                         <span *ngFor="let role of user.roles; let last = last">
                             {{role}}<span *ngIf="!last">, </span>
                         </span>
-                    </td>
+                    </td> -->
                     <td>
                         <button pButton icon="pi pi-pencil" class="p-button-rounded p-button-info mr-2" 
                                 (click)="editUser(user)" pTooltip="Edit User"></button>

@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { MessageService, ConfirmationService } from 'primeng/api';
 import { OrderService } from 'src/app/_service/order.service';
 import { PdfService } from 'src/app/_service/pdf.service';
+import { InventoryService } from 'src/app/_service/inventory.service';
+
 interface OrderDetail {
   id: number;
   orderId: number;
@@ -32,7 +34,8 @@ export class OrderComponent implements OnInit {
     private orderService: OrderService, 
     private messageService: MessageService,
     private confirmationService: ConfirmationService,
-    private pdfService: PdfService
+    private pdfService: PdfService,
+    private inventoryService: InventoryService
   ) { }
 
   ngOnInit(): void {
@@ -154,11 +157,12 @@ export class OrderComponent implements OnInit {
     });
   }
   paymentStatuses = [
-    { label: 'Chưa thanh toán', value: 'PENDING', icon: 'pi pi-clock' },
-    { label: 'Đã thanh toán', value: 'COMPLETED', icon: 'pi pi-check' },
-    { label: 'Thanh toán thất bại', value: 'FAILED', icon: 'pi pi-times' },
-    { label: 'Hoàn tiền', value: 'REFUNDED', icon: 'pi pi-undo' }
-  ];
+  { label: 'Chưa thanh toán', value: 'PENDING', icon: 'pi pi-clock' },
+  { label: 'Đã thanh toán', value: 'COMPLETED', icon: 'pi pi-check' },
+  { label: 'Thanh toán thất bại', value: 'FAILED', icon: 'pi pi-times' },
+  { label: 'Đã hủy', value: 'CANCELLED', icon: 'pi pi-times-circle' },
+  { label: 'Hoàn tiền', value: 'REFUNDED', icon: 'pi pi-undo' }
+];
   getPaymentMethodLabel(method: string): string {
     switch(method) {
       case 'COD': return 'Tiền mặt';
@@ -195,12 +199,49 @@ export class OrderComponent implements OnInit {
         if (status === 'PAID' && order.orderStatus === 'PENDING') {
           this.updateOrderStatus(order, 'PREPARING');
         }
-        else if(status === 'CANCELLED'){
+        else if(status === 'CANCELLED' || status === 'FAILED'){
+          // Nếu thanh toán thất bại hoặc bị hủy -> hủy đơn hàng và cập nhật lại số lượng sản phẩm
           if(order.orderStatus !== 'CANCELLED') {
-            this.updateOrderStatus(order, 'CANCELLED');
+            // Lấy chi tiết đơn hàng để cập nhật số lượng sản phẩm
+            this.orderService.getOrderDetailsById(order.id).subscribe({
+              next: (response) => {
+                const orderDetails = Array.isArray(response) ? response : response.orderDetails;
+                if (orderDetails && Array.isArray(orderDetails)) {
+                  // Cập nhật số lượng sản phẩm cho từng sản phẩm trong đơn hàng
+                  orderDetails.forEach((detail: OrderDetail) => {
+                    this.inventoryService.adjustStock(
+                      detail.productId,
+                      detail.quantity,
+                      `Hoàn trả số lượng do hủy đơn hàng #${order.id}`,
+                      'ADD'
+                    ).subscribe({
+                      error: (error: Error) => {
+                        console.error(`Lỗi khi cập nhật số lượng sản phẩm ${detail.productId}:`, error);
+                        this.messageService.add({
+                          severity: 'error',
+                          summary: 'Lỗi',
+                          detail: `Không thể cập nhật số lượng sản phẩm ${detail.name}`
+                        });
+                      }
+                    });
+                  });
+                }
+                // Hủy đơn hàng sau khi đã cập nhật số lượng sản phẩm
+                this.updateOrderStatus(order, 'CANCELLED');
+              },
+              error: (err) => {
+                console.error('Lỗi khi lấy chi tiết đơn hàng:', err);
+                this.messageService.add({
+                  severity: 'error',
+                  summary: 'Lỗi',
+                  detail: 'Không thể lấy chi tiết đơn hàng để cập nhật số lượng sản phẩm'
+                });
+                // Vẫn hủy đơn hàng ngay cả khi không thể cập nhật số lượng
+                this.updateOrderStatus(order, 'CANCELLED');
+              }
+            });
           }
         }
-      
       },
       error: (err) => {
         // Khôi phục trạng thái thanh toán cũ nếu cập nhật thất bại

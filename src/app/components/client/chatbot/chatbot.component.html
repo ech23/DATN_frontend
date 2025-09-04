@@ -10,8 +10,8 @@
         <!-- Chat Header -->
         <div class="chat-header">
             <div class="chat-header-info">
-                <h3>Customer Support</h3>
-                <p>We typically reply within 5 minutes</p>
+                <h3>Hỗ trợ khách hàng AI</h3>
+                <p>Bot sẽ trả lời ngay lập tức</p>
             </div>
             <button class="close-button" (click)="toggleChat()">
                 <i class="fas fa-times"></i>
@@ -20,10 +20,25 @@
 
         <!-- Chat Messages -->
         <div class="chat-messages" #scrollMe>
-            <div class="message bot" *ngFor="let message of messages">
+            <div *ngFor="let message of messages" 
+                 [ngClass]="{'message': true, 'user': message.isUser, 'bot': !message.isUser}">
                 <div class="message-content">
-                    <div class="message-text">{{message.text}}</div>
-                    <div class="message-time">{{message.time | date:'shortTime'}}</div>
+                    <div class="message-avatar" *ngIf="!message.isUser">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div class="message-bubble">
+                        <ng-container *ngIf="!message.typing; else typingIndicator">
+                            <div class="message-text">{{message.text}}</div>
+                            <div class="message-time">{{message.time | date:'shortTime'}}</div>
+                        </ng-container>
+                        <ng-template #typingIndicator>
+                            <div class="typing-indicator">
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                            </div>
+                        </ng-template>
+                    </div>
                 </div>
             </div>
         </div>
@@ -34,11 +49,11 @@
                 type="text" 
                 [(ngModel)]="userInput" 
                 (keyup.enter)="sendMessage()"
-                placeholder="Type your message..."
+                placeholder="Nhập tin nhắn của bạn..."
                 [disabled]="isTyping">
             <button (click)="sendMessage()" [disabled]="!userInput.trim() || isTyping">
                 <i class="fas fa-paper-plane"></i>
             </button>
         </div>
     </div>
-</div> 
+</div>

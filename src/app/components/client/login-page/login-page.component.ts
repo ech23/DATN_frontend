@@ -63,10 +63,9 @@ export class LoginPageComponent implements OnInit {
       next: res =>{
         this.isSuccessful = true;
         this.isSignUpFailed = false;
-        this.showSuccess("Đăng ký thành công")
-        this.loginForm.username = username;
-        this.loginForm.password = password;
-        this.login();
+        this.showSuccess("Xác thực OTP đã được gửi đến email của bạn");
+        // Điều hướng tới trang nhập OTP, gửi kèm email để hiển thị và xác thực
+        this.router.navigate(['/verify-otp'], { queryParams: { email } });
       },error: err =>{
         this.showError(err.message);
         this.errorMessage = err.error.message;

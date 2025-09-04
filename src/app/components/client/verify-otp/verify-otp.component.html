@@ -1,0 +1,13 @@
+<div class="container" style="max-width:420px;margin:40px auto;">
+	<h2>Xác thực OTP</h2>
+	<p *ngIf="email">Mã OTP đã được gửi tới: <strong>{{ email }}</strong></p>
+	<div>
+		<input type="text" placeholder="Nhập mã OTP" [(ngModel)]="otpCode" name="otpCode" class="p-inputtext p-component" style="width:100%;padding:0.75rem;margin:12px 0;"/>
+	</div>
+	<div style="display:flex; gap:8px;">
+		<button pButton type="button" label="Xác nhận" (click)="onVerify()" [disabled]="isSubmitting"></button>
+		<button pButton type="button" label="Gửi lại OTP" class="p-button-secondary" (click)="onResend()" [disabled]="isResending"></button>
+	</div>
+</div>
+
+

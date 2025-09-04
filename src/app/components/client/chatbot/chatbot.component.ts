@@ -1,9 +1,10 @@
 import { Component, OnInit, ViewChild, ElementRef, AfterViewChecked } from '@angular/core';
-
+import{ ChatService } from '../../../_service/chat.service';
 interface Message {
   text: string;
   time: Date;
   isUser: boolean;
+  typing?: boolean;
 }
 
 @Component({
@@ -19,97 +20,117 @@ export class ChatbotComponent implements OnInit, AfterViewChecked {
   messages: Message[] = [];
   isTyping = false;
   unreadCount = 0;
-
-  private readonly botResponses = {
-    greeting: [
-      "Hello! How can I help you today?",
-      "Hi there! What can I do for you?",
-      "Welcome! How may I assist you?"
-    ],
-    goodbye: [
-      "Goodbye! Have a great day!",
-      "See you later! Take care!",
-      "Bye! Feel free to come back if you need anything!"
-    ],
-    thanks: [
-      "You're welcome!",
-      "No problem at all!",
-      "Glad I could help!"
-    ],
-    default: [
-      "I'm not sure I understand. Could you please rephrase that?",
-      "I'm still learning. Could you try asking that differently?",
-      "I don't have an answer for that yet. Is there something else I can help you with?"
-    ]
-  };
-
-  constructor() {
-    // Add initial bot message
-    this.addBotMessage("Hello! I'm your customer support assistant. How can I help you today?");
-  }
-
+  private sessionId: string | null = null;
+  constructor(private chatService: ChatService) { }
   ngOnInit(): void {
+      this.initializeChat();
+  }
+  ngAfterViewChecked() {
     this.scrollToBottom();
   }
-
-  ngAfterViewChecked(): void {
-    this.scrollToBottom();
+  private initializeChat(): void {
+    console.log('Initializing chat...');
+    this.chatService.createSession().subscribe({
+        next: (response) => {
+            console.log('Session created:', response);
+            if (response && response.sessionId) {
+                this.sessionId = response.sessionId;
+                this.loadChatHistory();
+                this.addBotMessage("Xin chào! Tôi là trợ lý ảo. Tôi có thể giúp gì cho bạn?");
+            } else {
+                console.error('Invalid session response:', response);
+                this.addBotMessage("Xin lỗi, không thể tạo phiên chat.");
+            }
+        },
+        error: (error) => {
+            console.error('Session creation error:', error);
+            this.addBotMessage("Xin lỗi, hiện tại không thể kết nối. Vui lòng thử lại sau.");
+        }
+    });
+}
+  private loadChatHistory(): void {
+    if (!this.sessionId) return;
+    
+    this.chatService.getChatHistory(this.sessionId).subscribe({
+      next: (history) => {
+        this.messages = history.map((msg: any) => ({
+          text: msg.content,
+          time: new Date(msg.timestamp),
+          isUser: msg.isUser
+        }));
+      },
+      error: (error) => {
+        console.error('Error loading chat history:', error);
+      }
+    });
   }
-
   toggleChat(): void {
     this.isOpen = !this.isOpen;
     if (!this.isOpen) {
       this.unreadCount = 0;
     }
   }
-
-  sendMessage(): void {
-    if (!this.userInput.trim() || this.isTyping) return;
+    sendMessage(): void {
+    if (!this.userInput.trim() || this.isTyping || !this.sessionId) {
+        console.log('Validation failed:', {
+            userInput: this.userInput,
+            isTyping: this.isTyping,
+            sessionId: this.sessionId
+        });
+        return;
+    }
 
     const userMessage = this.userInput.trim();
     this.addUserMessage(userMessage);
     this.userInput = '';
-
-    // Simulate bot typing
     this.isTyping = true;
-    setTimeout(() => {
-      this.handleBotResponse(userMessage);
-      this.isTyping = false;
-    }, 1000);
-  }
 
-  private handleBotResponse(userMessage: string): void {
-    const lowerMessage = userMessage.toLowerCase();
+    console.log('Sending message:', {
+        message: userMessage,
+        sessionId: this.sessionId
+    });
 
-    if (this.containsAny(lowerMessage, ['hi', 'hello', 'hey'])) {
-      this.addBotMessage(this.getRandomResponse(this.botResponses.greeting));
-    }
-    else if (this.containsAny(lowerMessage, ['bye', 'goodbye', 'see you'])) {
-      this.addBotMessage(this.getRandomResponse(this.botResponses.goodbye));
-    }
-    else if (this.containsAny(lowerMessage, ['thanks', 'thank you', 'appreciate it'])) {
-      this.addBotMessage(this.getRandomResponse(this.botResponses.thanks));
-    }
-    else if (this.containsAny(lowerMessage, ['price', 'cost', 'expensive', 'cheap'])) {
-      this.addBotMessage("Our prices are competitive and vary by product. You can check specific prices in our product catalog.");
-    }
-    else if (this.containsAny(lowerMessage, ['shipping', 'delivery', 'ship'])) {
-      this.addBotMessage("We offer free shipping on orders over $50. Standard delivery takes 3-5 business days.");
-    }
-    else if (this.containsAny(lowerMessage, ['return', 'refund', 'exchange'])) {
-      this.addBotMessage("We have a 30-day return policy. Items must be unused and in their original packaging.");
-    }
-    else {
-      this.addBotMessage(this.getRandomResponse(this.botResponses.default));
-    }
-  }
+    this.chatService.sendMessage(userMessage, this.sessionId).subscribe({
+        next: (response) => {
+            console.log('Raw Bot response:', response); 
+            this.isTyping = false; 
 
+            
+            let botReply = '';
+            if (typeof response === 'string') {
+                botReply = response;
+            } else if (response && response.reply) {
+                botReply = response.reply;
+            } else if (response && response.message) {
+                botReply = response.message;
+            } else if (response && response.response) {
+                botReply = response.response;
+            } else {
+                console.error('Unexpected response format:', response);
+                botReply = "Xin lỗi, tôi không thể xử lý câu trả lời lúc này.";
+            }
+
+            this.addBotMessage(botReply);
+        },
+        error: (error) => {
+            this.isTyping = false;
+            console.error('Error details:', {
+                error: error,
+                status: error?.status,
+                message: error?.message,
+                fullError: error
+            });
+            this.addBotMessage("Xin lỗi, có lỗi xảy ra. Vui lòng thử lại.");
+        }
+    });
+}
   private addUserMessage(text: string): void {
     this.messages.push({
       text,
       time: new Date(),
       isUser: true
     });
+    this.scrollToBottom();
   }
 
   private addBotMessage(text: string): void {
@@ -121,19 +142,12 @@ export class ChatbotComponent implements OnInit, AfterViewChecked {
     if (!this.isOpen) {
       this.unreadCount++;
     }
+    this.scrollToBottom();
   }
-
-  private getRandomResponse(responses: string[]): string {
-    return responses[Math.floor(Math.random() * responses.length)];
-  }
-
-  private containsAny(str: string, keywords: string[]): boolean {
-    return keywords.some(keyword => str.includes(keyword));
-  }
-
   private scrollToBottom(): void {
     try {
-      this.myScrollContainer.nativeElement.scrollTop = this.myScrollContainer.nativeElement.scrollHeight;
+      this.myScrollContainer.nativeElement.scrollTop = 
+        this.myScrollContainer.nativeElement.scrollHeight;
     } catch (err) {}
   }
-} 
+}

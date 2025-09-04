@@ -25,4 +25,14 @@ export class AuthService {
   logout():Observable<any>{
     return this.http.post(AUTH_API + "logout",{},httpOptions);
   }
+
+  // OTP: send code to email/phone during registration
+  sendOtp(destination: string): Observable<any> {
+    return this.http.post(AUTH_API + 'send-otp', { destination }, httpOptions);
+  }
+
+  // OTP: verify code and finalize registration
+  verifyOtp(email: string, otpCode: string): Observable<any> {
+    return this.http.post(AUTH_API + 'verify-otp', { email, otpCode }, httpOptions);
+  }
 }
